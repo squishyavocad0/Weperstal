@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <link rel="stylesheet" href="styles.css">
+    <title>Onze dieren - Weperstal</title>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">
+            Weperstal
+            <img src="Logo/Horseshoe.png" alt="Horseshoe Logo" class="logo-img">
+        </a>
+        <button class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">Over ons</a></li>
+            <li><a href="activiteiten.html">Onze activiteiten</a></li>
+            <li><a href="dieren.html">Onze dieren</a></li>
+            <li><a href="blog.html">Blog</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </nav>
+    
+    <section class="section dieren-section">
+        <h2>Onze Dieren</h2>
+        <div class="dieren-filters">
+            <button class="dieren-filter" data-type="horse">Paard</button>
+            <button class="dieren-filter" data-type="dog">Hond</button>
+            <button class="dieren-filter" data-type="cat">Kat</button>
+            <button class="dieren-filter" data-type="sheep">Schaap</button>
+            <button class="dieren-filter" data-type="pony">Pony</button>
+            <button class="dieren-filter" data-type="chicken">Kip</button>
+            <button class="dieren-filter" data-type="fish">Vis</button>
+        </div>
+        <div class="dieren-grid" id="dierenGrid"></div>
+    </section>
+    <script src="script.js"></script>
+</body>
+</html> 
