@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins:400,600,700&display=swap');
+
 /* Reset and base styles */
 * {
     margin: 0;
@@ -6,13 +8,17 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
     background: #F5F1E8; /* Cream */
     color: #2D4A2D; /* Forest Green */
     min-height: 100vh;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     text-align: left;
+}
+
+h1, h2, h3, .cta-btn, .dier-card-name, .dier-card-type, .dieren-filter {
+    font-family: 'Poppins', sans-serif;
 }
 
 .navbar {
@@ -423,11 +429,52 @@ html {
 
 /* Dieren Section */
 .dieren-grid {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 1rem;
+  max-width: calc(3 * 260px + 2 * 1rem);
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  justify-content: center;
+}
+
+@media (max-width: 900px) {
+    .dieren-grid {
+        grid-template-columns: 1fr 1fr;
+        max-width: none;
+    }
+}
+@media (max-width: 600px) {
+    .dieren-grid {
+        grid-template-columns: 1fr;
+        max-width: none;
+    }
+}
+
+.dieren-pagination {
     display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
     justify-content: center;
-    margin-top: 2rem;
+    align-items: center;
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.dieren-page-btn {
+    background: #E8DCC4;
+    color: #2D4A2D;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.4rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.dieren-page-btn:disabled {
+    background: #ccc;
+    color: #fff;
+    cursor: not-allowed;
 }
 
 /* Activities Section - Clean Design */
@@ -623,16 +670,23 @@ html {
 }
 
 .faq-item {
-    background: #F5F1E8;
+    background: #fff; /* Always white */
     border-radius: 12px;
     margin-bottom: 1rem;
     border: 1.5px solid #E8DCC4;
     overflow: hidden;
-    transition: box-shadow 0.2s;
+    transition: box-shadow 0.2s, background 0.2s;
 }
 
-.faq-item:hover {
+.faq-item:hover,
+.faq-item.active {
+    background: #fff; /* White on hover and when open */
     box-shadow: 0 4px 16px rgba(107,142,107,0.1);
+}
+
+/* Optional: Remove background change on .faq-question:hover */
+.faq-question:hover {
+    background: #fff;
 }
 
 .faq-question {
@@ -701,68 +755,123 @@ html {
     }
 }
 
-.dieren-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: center;
-  margin-bottom: 2rem;
-}
-.dieren-filter {
-  background: #E8DCC4;
-  color: #2D4A2D;
-  border: none;
-  border-radius: 20px;
-  padding: 0.7rem 1.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-}
-.dieren-filter.active,
-.dieren-filter:hover {
-  background: #6B8E6B;
-  color: #fff;
-}
-.dieren-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-}
 .dier-card {
-  background: #F5F1E8;
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(45,74,45,0.08);
-  padding: 2rem 1rem;
-  text-align: center;
+  background: linear-gradient(135deg, #fffbe6 40%, #B8D4BA 70%, #9CAF88 100%); /* multi-shade green gradient */
+  border-radius: 22px;
+  box-shadow: 0 6px 24px rgba(45,74,45,0.10), 0 1.5px 8px #b8d4ba;
+  padding: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
+  border: 4px solid #6B8E6B;
+  max-width: 260px;
+  margin: 0 auto;
+  position: relative;
+  overflow: visible;
+  transition: none;
 }
-.dier-icon {
-  width: 60px;
-  height: 60px;
-  margin-bottom: 1rem;
+.dier-card:hover {
+  /* Remove scaling/rotation on hover */
+  transform: none;
+  box-shadow: 0 6px 24px rgba(45,74,45,0.10), 0 1.5px 8px #b8d4ba;
+  border-color: #6B8E6B;
 }
-.dier-name {
-  font-size: 1.2rem;
+
+.dier-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.65); /* semi-transparent white overlay */
+  z-index: 0;
+  pointer-events: none;
+}
+
+.dier-card-border {
+  padding: 0.7rem 1rem 1.5rem 1rem; /* was 1.2rem at the top, now 0.7rem */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.dier-card-imageblock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start !important; /* Only this needs !important */
+  width: 100%;
+  margin-bottom: 0.7rem;
+}
+
+.dier-card-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.7rem;
+  width: 240px;         /* Match the image width */
+  margin-left: 0;       /* Remove any left margin */
+  justify-content: flex-start; /* Left-align contents */
+}
+
+.dier-card-type {
+  font-size: 0.95rem;
   font-weight: 700;
-  color: #6B8E6B;
-  margin-bottom: 0.5rem;
+  color: #fff;
+  background: #6B8E6B;
+  border-radius: 12px;
+  padding: 0.2rem 0.9rem;
+  letter-spacing: 1px;
+  box-shadow: 0 1px 4px rgba(107,142,107,0.10);
+  z-index: 2;
+  margin: 0;
 }
-.dier-desc {
+
+.dier-card-name {
+  font-size: 1.3rem;
+  font-weight: 800;
   color: #2D4A2D;
-  font-size: 1rem;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 0 #fff, 0 2px 4px #b8d4ba44;
+  margin: 0;
 }
-@media (max-width: 900px) {
-  .dieren-grid {
-    grid-template-columns: 1fr 1fr;
-  }
+
+.dier-card-photo {
+  width: 240px;
+  height: 160px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(107,142,107,0.10);
+  overflow: hidden;
+  border: 3px solid #B8D4BA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0;
 }
-@media (max-width: 600px) {
-  .dieren-grid {
-    grid-template-columns: 1fr;
-  }
+
+.dier-card-name, .dier-card-desc {
+  align-self: center;
+}
+.dier-card-name,
+.dier-card-desc {
+  text-shadow: 0 1px 4px rgba(45,74,45,0.10), 0 0px 2px #fff;
+}
+.dier-card-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.dier-card-desc {
+  font-size: 1.05rem;
+  color: #2D4A2D;
+  text-align: center;
+  margin-top: 0.2rem;
+  margin-bottom: 0;
+  min-height: 2.5em;
 }
 
 .blog-section {
@@ -904,4 +1013,67 @@ html {
 .admin-blog-actions button:hover {
     background: #6B8E6B;
     color: #fff;
+}
+
+/* FAQ base styles */
+.faq-item {
+    background: #fff;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    border: 1.5px solid #E8DCC4;
+    overflow: hidden;
+    transition: box-shadow 0.2s, background 0.2s;
+}
+
+/* Ensure FAQ items are always white on hover and when expanded (active), for readability */
+.faq-item,
+.faq-item:hover,
+.faq-item.active,
+.faq-item.active:hover,
+.faq-question:hover,
+.faq-item.active .faq-question,
+.faq-item.active .faq-question:hover {
+    background: #fff !important;
+}
+
+/* --- FILTER BUTTONS: RESET TO GREEN PALETTE --- */
+.dieren-filter {
+  background: #E8DCC4;
+  color: #2D4A2D;
+  border: none;
+  border-radius: 24px;
+  padding: 0.7rem 1.6rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.18s;
+  box-shadow: 0 2px 8px rgba(107,142,107,0.08);
+  outline: none;
+  margin: 0;
+  letter-spacing: 0.5px;
+  position: relative;
+}
+
+.dieren-filter.active,
+.dieren-filter:focus {
+  background: #6B8E6B;
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 16px rgba(107,142,107,0.15);
+  transform: scale(1.08);
+  z-index: 1;
+}
+
+.dieren-filter:hover {
+  background: #9CAF88;
+  color: #fff;
+  border: none;
+  box-shadow: 0 6px 20px rgba(107,142,107,0.14);
+  transform: scale(1.10);
+  z-index: 2;
+}
+
+.dieren-filter:active {
+  /* Remove background and color, will be set inline from JS */
+  transform: scale(0.97);
 }

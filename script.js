@@ -113,42 +113,218 @@ const dieren = [
     name: 'Tokkie',
     desc: 'De haan van het erf, altijd als eerste wakker.',
     icon: '🐓'
+  },
+  {
+    type: 'horse',
+    name: 'Ster',
+    desc: 'Een prachtige merrie die graag in de zon staat te dromen.',
+    icon: '🐴'
+  },
+  {
+    type: 'dog',
+    name: 'Rakker',
+    desc: 'Een slimme hond die altijd in is voor een spelletje.',
+    icon: '🐶'
+  },
+  {
+    type: 'cat',
+    name: 'Poekie',
+    desc: 'Een nieuwsgierige kat die overal haar neus in steekt.',
+    icon: '🐱'
+  },
+  {
+    type: 'sheep',
+    name: 'Sneeuwbal',
+    desc: 'Een wit schaap dat dol is op knuffels en gras.',
+    icon: '🐑'
+  },
+  {
+    type: 'pony',
+    name: 'Binky',
+    desc: 'Een kleine pony met een groot hart en veel energie.',
+    icon: '🐴'
+  },
+  {
+    type: 'chicken',
+    name: 'Pluisje',
+    desc: 'Een pluizige kip die elke dag een ei legt.',
+    icon: '🐔'
+  },
+  {
+    type: 'fish',
+    name: 'Splash',
+    desc: 'Een vrolijke vis die graag rondjes zwemt.',
+    icon: '🐟'
+  },
+  {
+    type: 'dog',
+    name: 'Luna',
+    desc: 'Een lieve hond die graag met kinderen speelt.',
+    icon: '🐶'
+  },
+  {
+    type: 'cat',
+    name: 'Tijger',
+    desc: 'Een stoere kater met een zachte kant.',
+    icon: '🐱'
+  },
+  {
+    type: 'horse',
+    name: 'Donder',
+    desc: 'Een krachtig paard dat graag galoppeert door de wei.',
+    icon: '🐴'
   }
 ];
+
+// Mapping for animal types to Dutch
+const typeToDutch = {
+  horse: 'Paard',
+  dog: 'Hond',
+  cat: 'Kat',
+  sheep: 'Schaap',
+  pony: 'Pony',
+  chicken: 'Kip',
+  fish: 'Vis'
+};
+
+// --- Pagination Variables ---
+let dierenCurrentPage = 1;
+const dierenPerPage = 18; // Change to 20 for 4x5 grid
+let dierenSelectedTypes = [];
 
 // --- Render Function ---
 function renderDieren(selectedTypes = []) {
   const grid = document.getElementById('dierenGrid');
+  const pagination = document.getElementById('dierenPagination');
+  const pageInfo = document.getElementById('dierenPageInfo');
+  const prevBtn = document.getElementById('dierenPrev');
+  const nextBtn = document.getElementById('dierenNext');
   if (!grid) return;
+
+  // Filter animals
   let filtered;
   if (selectedTypes.length === 0) {
     filtered = dieren;
   } else {
     filtered = dieren.filter(d => selectedTypes.includes(d.type));
   }
-  grid.innerHTML = filtered.slice(0, 30).map(dier => `
-    <div class="dier-card">
-      <div class="dier-icon">${dier.icon}</div>
-      <div class="dier-name">${dier.name}</div>
-      <div class="dier-desc">${dier.desc}</div>
-    </div>
-  `).join('');
+
+  // Pagination logic
+  const totalPages = Math.ceil(filtered.length / dierenPerPage);
+  if (dierenCurrentPage > totalPages) dierenCurrentPage = 1;
+  const start = (dierenCurrentPage - 1) * dierenPerPage;
+  const end = start + dierenPerPage;
+  const pageDieren = filtered.slice(start, end);
+
+  // Render cards
+  const imageFiles = [
+    'Horse10.jpeg', 'Horse11.jpeg', 'Horse12.jpeg', 'Horse13.jpeg', 'Horse14.jpeg',
+    'Horse15.jpeg', 'Horse16.jpeg', 'Horse17.jpeg', 'Horse18.jpeg', 'Horse19.jpeg',
+    'Horse20.jpeg', 'Horse21.jpeg', 'Horse22.jpeg', 'Horse23.jpeg', 'Horse24.jpeg',
+    'Horse25.jpeg', 'Horse26.jpeg', 'Horse27.jpeg', 'Horse28.jpeg', 'Horse29.jpeg',
+    'Horse30.jpeg', 'Horse31.jpeg', 'Horse32.jpeg', 'Horse33.jpeg', 'Horse34.jpeg'
+  ];
+  const typeColors = {
+    horse:   "#eafbe7",
+    pony:    "#f0fbe7",
+    chicken: "#fdf6e3",
+    cat:     "#e7f7f0",
+    dog:     "#fff5e0",
+    sheep:   "#f5f5f5",
+    fish:    "#e7f4fb"
+  };
+  const typeAccentColors = {
+    horse:   "#9CAF88",
+    pony:    "#B8D4BA",
+    chicken: "#f2e6b8",
+    cat:     "#6B8E6B",
+    dog:     "#ffd699",
+    sheep:   "#cccccc",
+    fish:    "#b8d4e6"
+  };
+  grid.innerHTML = pageDieren.map((dier, idx) => {
+    const imgFile = imageFiles[idx % imageFiles.length] || 'Horse10.jpeg';
+    const typeKey = (dier.type || '').toLowerCase();
+    const color = typeColors[typeKey] || typeColors['horse'];
+    const accent = typeAccentColors[typeKey] || typeAccentColors['horse'];
+    return `
+      <div class="dier-card" style="background: ${color}; border: 4px solid ${accent}">
+        <div class="dier-card-border">
+          <div class="dier-card-header">
+            <div class="dier-card-type" style="background: ${accent}">${typeToDutch[dier.type] || dier.type}</div>
+            <div class="dier-card-name">${dier.name}</div>
+          </div>
+          <div class="dier-card-photo" style="border: 3px solid ${accent}">
+            <img src="Images/${imgFile}" alt="${dier.name}">
+          </div>
+          <div class="dier-card-desc">${dier.desc}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Pagination controls
+  if (pagination) {
+    if (totalPages > 1) {
+      pagination.style.display = '';
+      pageInfo.textContent = `Pagina ${dierenCurrentPage} van ${totalPages}`;
+      prevBtn.disabled = dierenCurrentPage === 1;
+      nextBtn.disabled = dierenCurrentPage === totalPages;
+    } else {
+      pagination.style.display = 'none';
+    }
+  }
 }
 
-// --- Filter Buttons ---
-document.addEventListener('DOMContentLoaded', function() {
-  let selectedTypes = [];
-  renderDieren(selectedTypes);
+function updateFilterButtonStyles() {
+  document.querySelectorAll('.dieren-filter').forEach(btn => {
+    const typeKey = (btn.dataset.type || '').toLowerCase();
+    const color = typeColors[typeKey] || typeColors['horse'];
+    const accent = typeAccentColors[typeKey] || typeAccentColors['horse'];
+    if (btn.classList.contains('active')) {
+      btn.style.background = accent;
+      btn.style.color = '#fff';
+      btn.style.border = `2px solid ${accent}`;
+    } else {
+      btn.style.background = color;
+      btn.style.color = '#2D4A2D';
+      btn.style.border = `2px solid ${accent}`;
+    }
+  });
+}
 
+function setupFilterButtons() {
   document.querySelectorAll('.dieren-filter').forEach(btn => {
     btn.addEventListener('click', function() {
-      const type = this.dataset.type;
       this.classList.toggle('active');
-      // Update selectedTypes array
-      selectedTypes = Array.from(document.querySelectorAll('.dieren-filter.active')).map(b => b.dataset.type);
-      renderDieren(selectedTypes);
+      dierenSelectedTypes = Array.from(document.querySelectorAll('.dieren-filter.active')).map(b => b.dataset.type);
+      dierenCurrentPage = 1; // Reset to first page on filter
+      renderDieren(dierenSelectedTypes);
     });
   });
+}
+
+// --- Filter Buttons & Pagination Events ---
+document.addEventListener('DOMContentLoaded', function() {
+  dierenSelectedTypes = [];
+  renderDieren(dierenSelectedTypes);
+  setupFilterButtons();
+
+  // Pagination buttons
+  const prevBtn = document.getElementById('dierenPrev');
+  const nextBtn = document.getElementById('dierenNext');
+  if (prevBtn && nextBtn) {
+    prevBtn.addEventListener('click', function() {
+      if (dierenCurrentPage > 1) {
+        dierenCurrentPage--;
+        renderDieren(dierenSelectedTypes);
+      }
+    });
+    nextBtn.addEventListener('click', function() {
+      dierenCurrentPage++;
+      renderDieren(dierenSelectedTypes);
+    });
+  }
 });
 
 // --- Blog Posts Rendering ---
