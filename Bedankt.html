@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <link rel="stylesheet" href="styles.css">
+    <title>Bedankt - Weperstal</title>
+    <meta http-equiv="refresh" content="6;url=/index.html">
+    <meta name="robots" content="noindex">
+    <style>
+      .thanks-card { max-width: 720px; margin: 0 auto; background: #fff; border: 1.5px solid #E8DCC4; border-radius: 18px; padding: 2rem; box-shadow: 0 2px 8px rgba(45,74,45,0.08); }
+      .thanks-title { color: #6B8E6B; font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem; }
+      .thanks-text { color: #2D4A2D; font-size: 1.1rem; }
+    </style>
+  </head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">
+            Weperstal
+            <img src="Logo/Horseshoe.png" alt="Horseshoe Logo" class="logo-img">
+        </a>
+        <button class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">Over ons</a></li>
+            <li><a href="activiteiten.html">Onze activiteiten</a></li>
+            <li><a href="dieren.html">Onze dieren</a></li>
+            <li><a href="blog.html">Blog</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </nav>
+    <section class="section">
+        <div class="thanks-card">
+            <h1 class="thanks-title">Bedankt voor je bericht!</h1>
+            <p class="thanks-text">We nemen zo snel mogelijk contact met je op.</p>
+            <p class="thanks-text">Je wordt binnen enkele seconden doorgestuurd naar de homepagina. Geen geduld?
+              <a href="index.html" class="cta-btn" style="display:inline-block; margin-left: 0.5rem;">Terug naar home</a>
+            </p>
+        </div>
+    </section>
+    <canvas id="confetti" style="position:fixed; inset:0; pointer-events:none; z-index:9999;"></canvas>
+    <script src="script.js"></script>
+    <script>
+      (function() {
+        const canvas = document.getElementById('confetti');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const colors = ['#6B8E6B', '#9CAF88', '#B8D4BA', '#E8DCC4', '#F5F1E8', '#ffd166', '#ef476f', '#06d6a0', '#118ab2'];
+        let W, H, particles = [], running = true, opacity = 1;
+
+        function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize, { passive: true });
+        resize();
+
+        function rand(min, max) { return Math.random() * (max - min) + min; }
+
+        function createParticles(count) {
+          for (let i = 0; i < count; i++) {
+            particles.push({
+              x: rand(0, W),
+              y: rand(-H * 0.2, -20),
+              size: rand(6, 12),
+              color: colors[Math.floor(rand(0, colors.length))],
+              angle: rand(0, Math.PI * 2),
+              spin: rand(-0.1, 0.1),
+              velX: rand(-1, 1),
+              velY: rand(2, 5),
+              wobble: rand(0.5, 2),
+              wobbleSpeed: rand(0.02, 0.06),
+              shape: Math.random() < 0.5 ? 'rect' : 'circle'
+            });
+          }
+        }
+
+        // initial burst + a few frames of additional particles
+        createParticles(180);
+        const drizzle = setInterval(() => createParticles(30), 200);
+
+        // stop adding after 1.2s, then fade out
+        setTimeout(() => { clearInterval(drizzle); }, 1200);
+        setTimeout(() => { running = false; }, 2500);
+
+        function draw() {
+          ctx.clearRect(0, 0, W, H);
+          ctx.globalAlpha = opacity;
+          for (let p of particles) {
+            p.x += p.velX + Math.sin(p.angle) * p.wobble * 0.3;
+            p.y += p.velY;
+            p.angle += p.wobbleSpeed;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.angle);
+            ctx.fillStyle = p.color;
+            if (p.shape === 'rect') {
+              ctx.fillRect(-p.size * 0.5, -p.size * 0.25, p.size, p.size * 0.5);
+            } else {
+              ctx.beginPath();
+              ctx.arc(0, 0, p.size * 0.4, 0, Math.PI * 2);
+              ctx.fill();
+            }
+            ctx.restore();
+          }
+          // remove off-screen particles
+          particles = particles.filter(p => p.y < H + 40);
+
+          if (!running) {
+            opacity -= 0.04;
+            if (opacity <= 0) {
+              canvas.parentNode && canvas.parentNode.removeChild(canvas);
+              return; // stop loop
+            }
+          }
+          requestAnimationFrame(draw);
+        }
+        draw();
+      })();
+    </script>
+</body>
+</html>

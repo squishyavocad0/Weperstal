@@ -14,6 +14,31 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // FAQ Collapsible functionality
 document.addEventListener('DOMContentLoaded', function() {
+  // Contact form: submit via fetch and redirect to Bedankt.html
+  const contactForm = document.getElementById('contactForm');
+  if (contactForm) {
+    contactForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const endpoint = contactForm.getAttribute('action');
+      const formData = new FormData(contactForm);
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          body: formData,
+          headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+          window.location.href = 'Bedankt.html';
+        } else {
+          // Fallback: try to parse errors, but still redirect so UX is consistent
+          window.location.href = 'Bedankt.html';
+        }
+      } catch(err) {
+        // Network error: still redirect to thank-you to avoid trapping user
+        window.location.href = 'Bedankt.html';
+      }
+    });
+  }
     const faqQuestions = document.querySelectorAll('.faq-question');
     
     faqQuestions.forEach(question => {

@@ -31,11 +31,13 @@
         <div class="contact-info">
             <p>Email: info@weperstal.com<br>Telefoon: +31 123 456 789</p>
         </div>
-        <form class="contact-form">
-            <input type="text" name="naam" placeholder="Naam" required>
+        <form class="contact-form" id="contactForm" action="https://formspree.io/f/xwprwbnd" method="POST">
+            <input type="text" name="name" placeholder="Naam" required>
             <input type="email" name="email" placeholder="E-mail" required>
-            <textarea name="bericht" placeholder="Bericht" required></textarea>
-            <button type="submit" class="cta-btn">Verstuur</button>
+            <textarea name="message" placeholder="Bericht" rows="6" required></textarea>
+            <!-- eenvoudige spam-trap -->
+            <input type="text" name="_gotcha" style="display:none">
+            <button type="submit" class="cta-btn">Versturen</button>
         </form>
     </section>
     <script src="script.js"></script>
