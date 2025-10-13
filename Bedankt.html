@@ -76,13 +76,15 @@
           }
         }
 
-        // initial burst + a few frames of additional particles
-        createParticles(180);
-        const drizzle = setInterval(() => createParticles(30), 200);
-
-        // stop adding after 1.2s, then fade out
-        setTimeout(() => { clearInterval(drizzle); }, 1200);
-        setTimeout(() => { running = false; }, 2500);
+        function startConfetti() {
+          // initial burst + a few frames of additional particles
+          createParticles(220);
+          const drizzle = setInterval(() => createParticles(35), 180);
+          // stop adding after ~1.6s, then fade out
+          setTimeout(() => { clearInterval(drizzle); }, 1600);
+          setTimeout(() => { running = false; }, 3800);
+          draw();
+        }
 
         function draw() {
           ctx.clearRect(0, 0, W, H);
@@ -108,7 +110,7 @@
           particles = particles.filter(p => p.y < H + 40);
 
           if (!running) {
-            opacity -= 0.04;
+            opacity -= 0.025;
             if (opacity <= 0) {
               canvas.parentNode && canvas.parentNode.removeChild(canvas);
               return; // stop loop
@@ -116,7 +118,12 @@
           }
           requestAnimationFrame(draw);
         }
-        draw();
+        // Start a tick after window load to ensure layout is painted
+        if (document.readyState === 'complete') {
+          setTimeout(startConfetti, 120);
+        } else {
+          window.addEventListener('load', () => setTimeout(startConfetti, 120), { once: true });
+        }
       })();
     </script>
 </body>
