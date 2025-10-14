@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     <title>Weperstal Blog Admin</title>
 </head>
 <body>
@@ -19,22 +20,644 @@
         </button>
         <ul class="nav-links">
             <li><a href="index.html">Home</a></li>
-            <li><a href="blog.html">Blog</a></li>
-            <li><a href="admin.html">Admin</a></li>
+            <li id="adminStatus" class="admin-status" style="display: none;">
+                <span class="status-pill">Ingelogd</span>
+            </li>
         </ul>
     </nav>
     <section class="section blog-admin-section">
-        <h2>Blogbeheer</h2>
-        <form id="blogForm" class="blog-form">
+        <div id="adminAuth" class="blog-form" style="max-width:480px; margin:0 auto 2rem;">
+            <h3>Admin login</h3>
+            <input type="email" id="adminEmail" placeholder="E-mail" required>
+            <input type="password" id="adminPassword" placeholder="Wachtwoord" required>
+            <div class="auth-buttons">
+                <button id="adminSignUp" class="cta-btn signup-btn" type="button">Account maken</button>
+                <button id="adminSignIn" class="cta-btn signin-btn" type="button">Inloggen</button>
+                <button id="adminSignOut" class="cta-btn signout-btn" type="button" style="display:none;">Uitloggen</button>
+            </div>
+            <div id="adminAuthMsg" style="margin-top:0.5rem; color:#6B8E6B;"></div>
+        </div>
+        
+        <div class="admin-content">
+            <h2>Verhalen & Dieren beheren</h2>
+            <p style="color:#6B8E6B; margin-bottom:2rem; font-style:italic;">Beheer je verhalen en dieren op een rustige, overzichtelijke manier</p>
+            <form id="blogForm" class="blog-form">
             <input type="text" id="blogTitle" placeholder="Titel" required>
             <input type="date" id="blogDate" required>
             <textarea id="blogStory" placeholder="Verhaal" rows="5" required></textarea>
-            <input type="url" id="blogImage" placeholder="Afbeeldings-URL (optioneel)">
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <input type="text" id="blogImage" placeholder="Afbeelding URL of upload via knop" style="flex: 1;">
+                <button type="button" onclick="openImageUpload('blogImage')" class="cta-btn" style="background: #E8DCC4; color: #2D4A2D; white-space: nowrap;">📷 Upload</button>
+            </div>
             <button type="submit" class="cta-btn">Plaats verhaal</button>
         </form>
         <h3>Bestaande verhalen</h3>
         <div id="adminBlogList" class="admin-blog-list"></div>
+        
+        <h2 style="margin-top: 3rem;">Dierenbeheer</h2>
+        <form id="animalForm" class="blog-form">
+            <select id="animalType" required>
+                <option value="">Kies dier type...</option>
+                <option value="horse">Paard</option>
+                <option value="pony">Pony</option>
+                <option value="dog">Hond</option>
+                <option value="cat">Kat</option>
+                <option value="sheep">Schaap</option>
+                <option value="chicken">Kip</option>
+                <option value="fish">Vis</option>
+            </select>
+            <input type="text" id="animalName" placeholder="Naam" required>
+            <input type="text" id="animalDesc" placeholder="Beschrijving">
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <input type="text" id="animalImage" placeholder="Afbeelding URL of upload via knop" style="flex: 1;">
+                <button type="button" onclick="openImageUpload('animalImage')" class="cta-btn" style="background: #E8DCC4; color: #2D4A2D; white-space: nowrap;">📷 Upload</button>
+            </div>
+            <button type="submit" class="cta-btn">Dier toevoegen</button>
+        </form>
+        <h3>Bestaande dieren</h3>
+        <div id="adminAnimalList" class="admin-blog-list"></div>
+        </div>
     </section>
+
+    <!-- Image Upload Modal -->
+    <div id="imageUploadModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Afbeelding uploaden en bijsnijden</h3>
+                <span class="close" onclick="closeImageModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="upload-section">
+                    <div id="dropZone" class="drop-zone">
+                        <div class="drop-zone-content">
+                            <p>📁 Sleep hier een afbeelding of</p>
+                            <input type="file" id="imageFileInput" accept="image/*" style="display: none;">
+                            <button type="button" onclick="event.stopPropagation(); document.getElementById('imageFileInput').click();" class="cta-btn choose-file-btn">Kies bestand</button>
+                            <p id="fileNameDisplay" class="file-name-display">Geen bestand gekozen</p>
+                        </div>
+                    </div>
+                    <div id="imagePreview" style="max-width: 100%; margin: 1rem 0;"></div>
+                </div>
+                <div class="crop-section" style="display: none;">
+                    <div id="cropContainer" style="max-width: 100%; max-height: 400px;"></div>
+                    <div class="crop-controls" style="margin-top: 1rem;">
+                        <button id="cropImageBtn" class="cta-btn crop-btn">Afbeelding bijsnijden</button>
+                        <button onclick="closeImageModal()" class="cta-btn cancel-btn">Annuleren</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="script.js"></script>
+    <script type="module">
+      import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+      
+      // Your actual Supabase values from .env
+      const SUPABASE_URL = 'https://rvqudmhqswddhifvbqyp.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2cXVkbWhxc3dkZGhpZnZicXlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1NTkwNjEsImV4cCI6MjA3MDEzNTA2MX0.R6EbjZt9ofT1uVEuKcGuIy3LwzHkIz8ckkJj07bDONo';
+      
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      
+      // Date formatting utility - European format dd/mm/yyyy
+      function formatDateEuropean(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString; // Return original if invalid
+        
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      }
+
+      const signInBtn = document.getElementById('adminSignIn');
+      const signUpBtn = document.getElementById('adminSignUp');
+      const signOutBtn = document.getElementById('adminSignOut');
+      const emailEl   = document.getElementById('adminEmail');
+      const passEl    = document.getElementById('adminPassword');
+      const msgEl     = document.getElementById('adminAuthMsg');
+
+      let accessToken = null;
+
+      async function refreshSessionUI() {
+        const { data } = await supabase.auth.getSession();
+        const session = data?.session || null;
+        accessToken = session?.access_token || null;
+        const statusPill = document.getElementById('adminStatus');
+        
+        signOutBtn.style.display = accessToken ? '' : 'none';
+        msgEl.textContent = '';
+        
+        // Get all admin content sections
+        const adminContent = document.querySelectorAll('.admin-content');
+        const forms = document.querySelectorAll('form');
+        const lists = document.querySelectorAll('#adminBlogList, #adminAnimalList');
+        
+        if (accessToken) {
+          statusPill.style.display = 'block';
+          console.log('User logged in, binding forms...');
+          
+          // Show admin content
+          adminContent.forEach(el => el.style.display = 'block');
+          forms.forEach(el => el.style.pointerEvents = 'auto');
+          forms.forEach(el => el.style.opacity = '1');
+          
+          bindBlogForm();
+          bindAnimalForm();
+          loadAdminPosts();
+          loadAnimals();
+        } else {
+          statusPill.style.display = 'none';
+          console.log('User not logged in');
+          
+          // Hide admin content
+          adminContent.forEach(el => el.style.display = 'none');
+          forms.forEach(el => el.style.pointerEvents = 'none');
+          forms.forEach(el => el.style.opacity = '0.5');
+          lists.forEach(el => el.innerHTML = '<p>Inloggen vereist om content te beheren.</p>');
+        }
+      }
+
+      signInBtn?.addEventListener('click', async () => {
+        msgEl.textContent = 'Bezig met inloggen...';
+        const { error } = await supabase.auth.signInWithPassword({
+          email: emailEl.value.trim(),
+          password: passEl.value
+        });
+        if (error) { msgEl.textContent = error.message; return; }
+        msgEl.textContent = 'Ingelogd';
+        passEl.value = '';
+        await refreshSessionUI();
+      });
+
+      signUpBtn?.addEventListener('click', async () => {
+        msgEl.textContent = 'Account aanmaken...';
+        const { error } = await supabase.auth.signUp({
+          email: emailEl.value.trim(),
+          password: passEl.value
+        });
+        if (error) { msgEl.textContent = error.message; return; }
+        msgEl.textContent = 'Account aangemaakt. Controleer je e-mail (indien nodig).';
+      });
+
+      signOutBtn?.addEventListener('click', async () => {
+        await supabase.auth.signOut();
+        accessToken = null;
+        msgEl.textContent = 'Uitgelogd';
+        await refreshSessionUI();
+      });
+
+      function bindBlogForm() {
+        const form = document.getElementById('blogForm');
+        if (!form || form.dataset.bound) return;
+        form.dataset.bound = 'true';
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const title = document.getElementById('blogTitle').value.trim();
+          const date = document.getElementById('blogDate').value;
+          const story = document.getElementById('blogStory').value.trim();
+          const image = document.getElementById('blogImage').value.trim();
+          if (!title || !date || !story) return;
+          
+          const editingId = form.dataset.editingId;
+          const isEditing = !!editingId;
+          
+          try {
+            const url = isEditing ? `/api/posts/${editingId}` : '/api/posts';
+            const method = isEditing ? 'PUT' : 'POST';
+            
+            const response = await fetch(url, {
+              method: method,
+              headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + accessToken },
+              body: JSON.stringify({ title, date, story, image, visible: true })
+            });
+            
+            if (response.ok) {
+              form.reset();
+              form.removeAttribute('data-editing-id');
+              const submitBtn = form.querySelector('button[type="submit"]');
+              submitBtn.textContent = 'Plaats verhaal';
+              await loadAdminPosts();
+            } else {
+              const result = await response.json();
+              alert('Error: ' + result.error);
+            }
+          } catch (error) {
+            alert('Network error: ' + error.message);
+          }
+        });
+      }
+
+      async function togglePostVisibility(id, visible) {
+        try {
+          const response = await fetch(`/api/posts/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + accessToken },
+            body: JSON.stringify({ visible })
+          });
+          
+          if (response.ok) {
+            await loadAdminPosts();
+          } else {
+            const error = await response.json();
+            alert('Fout bij wijzigen zichtbaarheid: ' + error.error);
+          }
+        } catch (error) {
+          alert('Fout bij wijzigen zichtbaarheid: ' + error.message);
+        }
+      }
+
+      async function deletePost(id) {
+        await fetch(`/api/posts/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + accessToken }
+        });
+        await loadAdminPosts();
+      }
+
+      async function editPost(id) {
+        try {
+          // Get post from the already loaded list instead of making a new request
+          const res = await fetch('/api/posts?all=true');
+          const posts = await res.json();
+          const post = posts.find(p => p.id === id);
+          
+          if (!post) {
+            alert('Verhaal niet gevonden');
+            return;
+          }
+          
+          // Fill the form with existing data
+          document.getElementById('blogTitle').value = post.title || '';
+          document.getElementById('blogDate').value = post.date || '';
+          document.getElementById('blogStory').value = post.story || '';
+          document.getElementById('blogImage').value = post.image || '';
+          
+          // Store the ID for updating
+          document.getElementById('blogForm').dataset.editingId = id;
+          
+          // Change submit button text
+          const submitBtn = document.querySelector('#blogForm button[type="submit"]');
+          submitBtn.textContent = 'Verhaal bijwerken';
+          
+          // Scroll to form
+          document.getElementById('blogForm').scrollIntoView({ behavior: 'smooth' });
+        } catch (error) {
+          alert('Fout bij laden van verhaal: ' + error.message);
+        }
+      }
+
+      async function loadAdminPosts() {
+        const adminList = document.getElementById('adminBlogList');
+        if (!adminList) return;
+        
+        try {
+          // Always fetch all posts for admin view
+          const res = await fetch('/api/posts?all=true');
+          const posts = await res.json();
+          
+          if (!posts.length) { 
+            adminList.innerHTML = '<p>Geen verhalen geplaatst.</p>'; 
+            return; 
+          }
+          
+          // Sort posts: visible first, then hidden
+          const sortedPosts = posts.sort((a, b) => {
+            if (a.visible === b.visible) return 0;
+            return a.visible ? -1 : 1;
+          });
+          
+          adminList.innerHTML = sortedPosts.map(p => `
+            <div class="admin-blog-card ${!p.visible ? 'hidden-post' : ''}">
+              <div class="admin-blog-title">${p.title}</div>
+              <div class="admin-blog-date">${formatDateEuropean(p.date)}</div>
+              <div class="admin-blog-status">
+                ${!p.visible ? '<span class="status-hidden">Verborgen</span>' : '<span class="status-visible">Zichtbaar</span>'}
+              </div>
+              <div class="admin-blog-actions">
+                <button onclick="window.__togglePost('${p.id}', ${!p.visible})" class="toggle-btn">
+                  ${!p.visible ? 'Zichtbaar maken' : 'Verbergen'}
+                </button>
+                <button onclick="window.__editPost('${p.id}')" class="edit-btn">Bewerken</button>
+                <button onclick="window.__deletePost('${p.id}')" class="delete-btn">Verwijderen</button>
+              </div>
+            </div>
+          `).join('');
+          
+          window.__togglePost = togglePostVisibility;
+          window.__deletePost = deletePost;
+          window.__editPost = editPost;
+        } catch (error) {
+          console.error('Error loading posts:', error);
+          adminList.innerHTML = '<p>Fout bij laden van verhalen.</p>';
+        }
+      }
+
+      function bindAnimalForm() {
+        const form = document.getElementById('animalForm');
+        if (!form) return;
+        if (form.dataset.bound) return;
+        form.dataset.bound = 'true';
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const type = document.getElementById('animalType').value.trim();
+          const name = document.getElementById('animalName').value.trim();
+          const desc = document.getElementById('animalDesc').value.trim();
+          const image_url = document.getElementById('animalImage').value.trim();
+          if (!type || !name) return;
+          
+          const editingId = form.dataset.editingId;
+          const isEditing = !!editingId;
+          
+          try {
+            const url = isEditing ? `/api/animals/${editingId}` : '/api/animals';
+            const method = isEditing ? 'PUT' : 'POST';
+            
+            const response = await fetch(url, {
+              method: method,
+              headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + accessToken },
+              body: JSON.stringify({ type, name, desc, image_url })
+            });
+            
+            if (response.ok) {
+              form.reset();
+              form.removeAttribute('data-editing-id');
+              const submitBtn = form.querySelector('button[type="submit"]');
+              submitBtn.textContent = 'Dier toevoegen';
+              await loadAnimals();
+            } else {
+              const result = await response.json();
+              alert('Error: ' + result.error);
+            }
+          } catch (error) {
+            alert('Network error: ' + error.message);
+          }
+        });
+      }
+
+      async function deleteAnimal(id) {
+        await fetch(`/api/animals/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + accessToken }
+        });
+        await loadAnimals();
+      }
+
+      async function loadAnimals() {
+        const list = document.getElementById('adminAnimalList');
+        if (!list) return;
+        
+        try {
+          const res = await fetch('/api/animals');
+          const animals = await res.json();
+          if (!animals.length) { 
+            list.innerHTML = '<p>Geen dieren toegevoegd.</p>'; 
+            return; 
+          }
+          
+          list.innerHTML = animals.map(a => `
+            <div class="admin-blog-card">
+              <div class="admin-blog-title">${a.name} <span style="color:#9CAF88">(${a.type})</span></div>
+              <div class="admin-blog-date">${a.desc || ''}</div>
+              <div class="admin-blog-actions">
+                <button onclick="window.__editAnimal('${a.id}')" class="edit-btn">Bewerken</button>
+                <button onclick="window.__deleteAnimal('${a.id}')" class="delete-btn">Verwijderen</button>
+              </div>
+            </div>
+          `).join('');
+          
+          window.__deleteAnimal = deleteAnimal;
+          window.__editAnimal = editAnimal;
+        } catch (error) {
+          list.innerHTML = '<p>Fout bij laden van dieren.</p>';
+        }
+      }
+
+      async function editAnimal(id) {
+        try {
+          // Get animal from the already loaded list instead of making a new request
+          const res = await fetch('/api/animals');
+          const animals = await res.json();
+          const animal = animals.find(a => a.id === id);
+          
+          if (!animal) {
+            alert('Dier niet gevonden');
+            return;
+          }
+          
+          // Fill the form with existing data
+          document.getElementById('animalType').value = animal.type || '';
+          document.getElementById('animalName').value = animal.name || '';
+          document.getElementById('animalDesc').value = animal.desc || '';
+          document.getElementById('animalImage').value = animal.image_url || '';
+          
+          // Store the ID for updating
+          document.getElementById('animalForm').dataset.editingId = id;
+          
+          // Change submit button text
+          const submitBtn = document.querySelector('#animalForm button[type="submit"]');
+          submitBtn.textContent = 'Dier bijwerken';
+          
+          // Scroll to form
+          document.getElementById('animalForm').scrollIntoView({ behavior: 'smooth' });
+        } catch (error) {
+          alert('Fout bij laden van dier: ' + error.message);
+        }
+      }
+
+      
+      // Image upload functionality
+      let currentTargetField = null;
+      let cropper = null;
+
+      // Make functions global so they can be called from onclick
+      window.openImageUpload = function(targetFieldId) {
+        console.log('openImageUpload called with target:', targetFieldId);
+        currentTargetField = targetFieldId;
+        document.getElementById('imageUploadModal').style.display = 'flex';
+        document.getElementById('imageFileInput').value = '';
+        document.getElementById('fileNameDisplay').textContent = 'Geen bestand gekozen';
+        document.getElementById('imagePreview').innerHTML = '';
+        document.querySelector('.crop-section').style.display = 'none';
+        document.querySelector('.upload-section').style.display = 'block';
+        
+        if (cropper) {
+          cropper.destroy();
+          cropper = null;
+        }
+        console.log('Modal opened and reset');
+      }
+
+      window.closeImageModal = function() {
+        document.getElementById('imageUploadModal').style.display = 'none';
+        if (cropper) {
+          cropper.destroy();
+          cropper = null;
+        }
+        currentTargetField = null;
+      }
+
+      // Handle file selection and drag-drop
+      const dropZone = document.getElementById('dropZone');
+      const imageFileInput = document.getElementById('imageFileInput');
+      const fileNameDisplay = document.getElementById('fileNameDisplay');
+      
+      console.log('Elements found:', {
+        dropZone: !!dropZone,
+        imageFileInput: !!imageFileInput,
+        fileNameDisplay: !!fileNameDisplay
+      });
+
+      // File input change
+      imageFileInput.addEventListener('change', function(e) {
+        console.log('File input changed');
+        const file = e.target.files[0];
+        if (file) {
+          console.log('File selected:', file.name);
+          handleFileSelection(file);
+        }
+      });
+
+      // Drag and drop events
+      dropZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+      });
+
+      dropZone.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+      });
+
+      dropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files && files.length > 0) {
+          handleFileSelection(files[0]);
+        }
+      });
+
+      // Click to open file dialog (only on the drop zone background, not buttons)
+      dropZone.addEventListener('click', function(e) {
+        console.log('Drop zone clicked, target:', e.target);
+        // Only trigger if clicking on the drop zone background or the text
+        if (e.target === dropZone || e.target.tagName === 'P') {
+          console.log('Triggering file input click');
+          imageFileInput.click();
+        }
+      });
+
+      function handleFileSelection(file) {
+        console.log('handleFileSelection called with:', file.name, file.type);
+        
+        if (!file.type.startsWith('image/')) {
+          alert('Alleen afbeeldingen zijn toegestaan!');
+          return;
+        }
+        
+        fileNameDisplay.textContent = file.name;
+        console.log('Filename updated, starting file reader');
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          console.log('File reader loaded, switching to crop section');
+          
+          // Show crop section immediately
+          document.querySelector('.upload-section').style.display = 'none';
+          document.querySelector('.crop-section').style.display = 'block';
+          
+          console.log('Sections switched, initializing cropper in 100ms');
+          
+          // Initialize cropper
+          setTimeout(() => {
+            console.log('Creating crop image element');
+            const cropImg = document.createElement('img');
+            cropImg.src = e.target.result;
+            cropImg.id = 'cropImage';
+            cropImg.style.maxWidth = '100%';
+            cropImg.style.height = 'auto';
+            document.getElementById('cropContainer').innerHTML = '';
+            document.getElementById('cropContainer').appendChild(cropImg);
+            
+            if (cropper) {
+              cropper.destroy();
+            }
+            
+            console.log('Initializing Cropper.js');
+            cropper = new Cropper(cropImg, {
+              aspectRatio: 16 / 9,
+              viewMode: 1,
+              dragMode: 'move',
+              autoCropArea: 0.8,
+              restore: false,
+              guides: false,
+              center: false,
+              highlight: false,
+              cropBoxMovable: true,
+              cropBoxResizable: true,
+              toggleDragModeOnDblclick: false,
+            });
+            console.log('Cropper initialized successfully');
+          }, 100);
+        };
+        reader.readAsDataURL(file);
+      }
+
+      // Handle crop button
+      document.getElementById('cropImageBtn').addEventListener('click', async function() {
+        if (!cropper) return;
+        
+        const canvas = cropper.getCroppedCanvas({
+          width: 800,
+          height: 450,
+          minWidth: 256,
+          minHeight: 256,
+          maxWidth: 1200,
+          maxHeight: 675,
+          fillColor: '#fff',
+          imageSmoothingEnabled: true,
+          imageSmoothingQuality: 'high',
+        });
+
+        if (canvas) {
+          canvas.toBlob(async function(blob) {
+            const formData = new FormData();
+            formData.append('image', blob, 'cropped-image.jpg');
+            
+            try {
+              const response = await fetch('/api/upload', {
+                method: 'POST',
+                headers: {
+                  'Authorization': 'Bearer ' + accessToken
+                },
+                body: formData
+              });
+              
+              const result = await response.json();
+              if (result.success) {
+                document.getElementById(currentTargetField).value = result.imageUrl;
+                closeImageModal();
+              } else {
+                alert('Upload mislukt: ' + result.error);
+              }
+            } catch (error) {
+              alert('Upload fout: ' + error.message);
+            }
+          }, 'image/jpeg', 0.9);
+        }
+      });
+
+      // Close modal when clicking outside
+      document.getElementById('imageUploadModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeImageModal();
+        }
+      });
+      
+      refreshSessionUI();
+    </script>
 </body>
 </html>

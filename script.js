@@ -1,3 +1,30 @@
+// Hidden admin access - Type "INGRID"
+let secretCode = [];
+const secretSequence = 'INGRID';
+
+// Date formatting utility - European format dd/mm/yyyy
+function formatDateEuropean(dateString) {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return dateString; // Return original if invalid
+  
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
+document.addEventListener('keydown', function(e) {
+    secretCode += e.key.toLowerCase();
+    if (secretCode.length > secretSequence.length) {
+        secretCode = secretCode.slice(-secretSequence.length);
+    }
+    if (secretCode === secretSequence.toLowerCase()) {
+        window.location.href = '/admin.html';
+        secretCode = '';
+    }
+});
+
 // Hero animation
 window.addEventListener('DOMContentLoaded', () => {
     const hero = document.querySelector('.hero-content');
@@ -59,147 +86,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// --- Animal Data Example ---
-const dieren = [
-  {
-    type: 'horse',
-    name: 'Bliksem',
-    desc: 'Een energiek paard dat graag galoppeert over de weide.',
-    icon: '🐴'
-  },
-  {
-    type: 'dog',
-    name: 'Max',
-    desc: 'Vrolijke hond die dol is op kinderen en lange wandelingen.',
-    icon: '🐶'
-  },
-  {
-    type: 'cat',
-    name: 'Minoes',
-    desc: 'Lieve kat die graag op schoot ligt en spint.',
-    icon: '🐱'
-  },
-  {
-    type: 'sheep',
-    name: 'Wolletje',
-    desc: 'Een nieuwsgierig schaap dat graag in de zon ligt.',
-    icon: '🐑'
-  },
-  {
-    type: 'pony',
-    name: 'Daisy',
-    desc: 'Vriendelijke pony, perfect voor jonge kinderen.',
-    icon: '🐴'
-  },
-  {
-    type: 'chicken',
-    name: 'Kipje',
-    desc: 'Legt elke dag een vers eitje en scharrelt vrolijk rond.',
-    icon: '🐔'
-  },
-  {
-    type: 'fish',
-    name: 'Bubbles',
-    desc: 'Kleurrijke vis die rustig door het aquarium zwemt.',
-    icon: '🐟'
-  },
-  {
-    type: 'dog',
-    name: 'Bella',
-    desc: 'Speelse hond die graag apporteert in het park.',
-    icon: '🐶'
-  },
-  {
-    type: 'cat',
-    name: 'Simba',
-    desc: 'Stoere kater die graag op avontuur gaat.',
-    icon: '🐱'
-  },
-  {
-    type: 'horse',
-    name: 'Storm',
-    desc: 'Sterk paard met een prachtige zwarte vacht.',
-    icon: '🐴'
-  },
-  {
-    type: 'sheep',
-    name: 'Fluffy',
-    desc: 'Altijd in voor een knuffel en houdt van gras.',
-    icon: '🐑'
-  },
-  {
-    type: 'pony',
-    name: 'Sterre',
-    desc: 'Kleine pony met een groot hart.',
-    icon: '🐴'
-  },
-  {
-    type: 'chicken',
-    name: 'Tokkie',
-    desc: 'De haan van het erf, altijd als eerste wakker.',
-    icon: '🐓'
-  },
-  {
-    type: 'horse',
-    name: 'Ster',
-    desc: 'Een prachtige merrie die graag in de zon staat te dromen.',
-    icon: '🐴'
-  },
-  {
-    type: 'dog',
-    name: 'Rakker',
-    desc: 'Een slimme hond die altijd in is voor een spelletje.',
-    icon: '🐶'
-  },
-  {
-    type: 'cat',
-    name: 'Poekie',
-    desc: 'Een nieuwsgierige kat die overal haar neus in steekt.',
-    icon: '🐱'
-  },
-  {
-    type: 'sheep',
-    name: 'Sneeuwbal',
-    desc: 'Een wit schaap dat dol is op knuffels en gras.',
-    icon: '🐑'
-  },
-  {
-    type: 'pony',
-    name: 'Binky',
-    desc: 'Een kleine pony met een groot hart en veel energie.',
-    icon: '🐴'
-  },
-  {
-    type: 'chicken',
-    name: 'Pluisje',
-    desc: 'Een pluizige kip die elke dag een ei legt.',
-    icon: '🐔'
-  },
-  {
-    type: 'fish',
-    name: 'Splash',
-    desc: 'Een vrolijke vis die graag rondjes zwemt.',
-    icon: '🐟'
-  },
-  {
-    type: 'dog',
-    name: 'Luna',
-    desc: 'Een lieve hond die graag met kinderen speelt.',
-    icon: '🐶'
-  },
-  {
-    type: 'cat',
-    name: 'Tijger',
-    desc: 'Een stoere kater met een zachte kant.',
-    icon: '🐱'
-  },
-  {
-    type: 'horse',
-    name: 'Donder',
-    desc: 'Een krachtig paard dat graag galoppeert door de wei.',
-    icon: '🐴'
+// --- Animals from backend ---
+let dieren = [];
+async function fetchDieren() {
+  try {
+    const res = await fetch('/api/animals');
+    if (!res.ok) throw new Error('Failed to load animals');
+    dieren = await res.json();
+  } catch (e) {
+    dieren = [];
   }
-];
+}
 
 // Mapping for animal types to Dutch
 const typeToDutch = {
@@ -242,13 +139,6 @@ function renderDieren(selectedTypes = []) {
   const pageDieren = filtered.slice(start, end);
 
   // Render cards
-  const imageFiles = [
-    'Horse10.jpeg', 'Horse11.jpeg', 'Horse12.jpeg', 'Horse13.jpeg', 'Horse14.jpeg',
-    'Horse15.jpeg', 'Horse16.jpeg', 'Horse17.jpeg', 'Horse18.jpeg', 'Horse19.jpeg',
-    'Horse20.jpeg', 'Horse21.jpeg', 'Horse22.jpeg', 'Horse23.jpeg', 'Horse24.jpeg',
-    'Horse25.jpeg', 'Horse26.jpeg', 'Horse27.jpeg', 'Horse28.jpeg', 'Horse29.jpeg',
-    'Horse30.jpeg', 'Horse31.jpeg', 'Horse32.jpeg', 'Horse33.jpeg', 'Horse34.jpeg'
-  ];
   const typeColors = {
     horse:   "#eafbe7",
     pony:    "#f0fbe7",
@@ -268,10 +158,13 @@ function renderDieren(selectedTypes = []) {
     fish:    "#b8d4e6"
   };
   grid.innerHTML = pageDieren.map((dier, idx) => {
-    const imgFile = imageFiles[idx % imageFiles.length] || 'Horse10.jpeg';
     const typeKey = (dier.type || '').toLowerCase();
     const color = typeColors[typeKey] || typeColors['horse'];
     const accent = typeAccentColors[typeKey] || typeAccentColors['horse'];
+    
+    // Use image_url from database, fallback to default horse image
+    const imageUrl = dier.image_url || 'Images/Horse10.jpeg';
+    
     return `
       <div class="dier-card" style="background: ${color}; border: 4px solid ${accent}">
         <div class="dier-card-border">
@@ -280,7 +173,7 @@ function renderDieren(selectedTypes = []) {
             <div class="dier-card-name">${dier.name}</div>
           </div>
           <div class="dier-card-photo" style="border: 3px solid ${accent}">
-            <img src="Images/${imgFile}" alt="${dier.name}">
+            <img src="${imageUrl}" alt="${dier.name}" onerror="this.src='Images/Horse10.jpeg'">
           </div>
           <div class="dier-card-desc">${dier.desc}</div>
         </div>
@@ -330,8 +223,9 @@ function setupFilterButtons() {
 }
 
 // --- Filter Buttons & Pagination Events ---
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
   dierenSelectedTypes = [];
+  await fetchDieren();
   renderDieren(dierenSelectedTypes);
   setupFilterButtons();
 
@@ -353,94 +247,38 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // --- Blog Posts Rendering ---
-function renderBlogPosts() {
+async function renderBlogPosts() {
   const blogGrid = document.getElementById('blogGrid');
   const blogEmpty = document.getElementById('blogEmpty');
   if (!blogGrid) return;
-
-  // Get posts from localStorage or use an empty array
-  const posts = JSON.parse(localStorage.getItem('weperstal_blog_posts') || '[]')
-    .filter(post => post.visible !== false); // Only show visible posts
-
-  if (posts.length === 0) {
+  try {
+    const res = await fetch('/api/posts');
+    const posts = await res.json();
+    if (!posts.length) {
+      blogGrid.innerHTML = '';
+      if (blogEmpty) blogEmpty.style.display = '';
+      return;
+    }
+    if (blogEmpty) blogEmpty.style.display = 'none';
+    blogGrid.innerHTML = posts.map(post => `
+      <div class="blog-card">
+        <img class="blog-image" src="${post.image || 'Images/header.jpg'}" alt="${post.title}">
+        <div class="blog-title">${post.title}</div>
+        <div class="blog-date">${formatDateEuropean(post.date)}</div>
+        <div class="blog-story">${post.story}</div>
+      </div>
+    `).join('');
+  } catch (e) {
     blogGrid.innerHTML = '';
     if (blogEmpty) blogEmpty.style.display = '';
-    return;
   }
-  if (blogEmpty) blogEmpty.style.display = 'none';
-
-  blogGrid.innerHTML = posts.reverse().map(post => `
-    <div class="blog-card">
-      <img class="blog-image" src="${post.image || 'Images/header.jpg'}" alt="${post.title}">
-      <div class="blog-title">${post.title}</div>
-      <div class="blog-date">${post.date || ''}</div>
-      <div class="blog-story">${post.story}</div>
-    </div>
-  `).join('');
 }
 
 // Render blog posts on page load
 document.addEventListener('DOMContentLoaded', renderBlogPosts);
 
 // --- Blog Admin Logic ---
-function renderAdminBlogList() {
-  const adminList = document.getElementById('adminBlogList');
-  if (!adminList) return;
-  const posts = JSON.parse(localStorage.getItem('weperstal_blog_posts') || '[]');
-  if (posts.length === 0) {
-    adminList.innerHTML = '<p>Geen verhalen geplaatst.</p>';
-    return;
-  }
-  adminList.innerHTML = posts.reverse().map((post, idx) => `
-    <div class="admin-blog-card">
-      <div class="admin-blog-title">${post.title}</div>
-      <div class="admin-blog-date">${post.date || ''}</div>
-      <div class="admin-blog-actions">
-        <button onclick="toggleBlogVisibility(${posts.length-1-idx})">${post.visible === false ? 'Zichtbaar maken' : 'Verbergen'}</button>
-        <button onclick="deleteBlogPost(${posts.length-1-idx})">Verwijderen</button>
-      </div>
-    </div>
-  `).join('');
-}
-
-function saveBlogPost(e) {
-  e.preventDefault();
-  const title = document.getElementById('blogTitle').value.trim();
-  const date = document.getElementById('blogDate').value;
-  const story = document.getElementById('blogStory').value.trim();
-  const image = document.getElementById('blogImage').value.trim();
-  if (!title || !date || !story) return;
-
-  const posts = JSON.parse(localStorage.getItem('weperstal_blog_posts') || '[]');
-  posts.push({ title, date, story, image, visible: true });
-  localStorage.setItem('weperstal_blog_posts', JSON.stringify(posts));
-  document.getElementById('blogForm').reset();
-  renderAdminBlogList();
-  if (typeof renderBlogPosts === 'function') renderBlogPosts();
-}
-
-function toggleBlogVisibility(idx) {
-  const posts = JSON.parse(localStorage.getItem('weperstal_blog_posts') || '[]');
-  posts[idx].visible = posts[idx].visible === false ? true : false;
-  localStorage.setItem('weperstal_blog_posts', JSON.stringify(posts));
-  renderAdminBlogList();
-  if (typeof renderBlogPosts === 'function') renderBlogPosts();
-}
-
-function deleteBlogPost(idx) {
-  let posts = JSON.parse(localStorage.getItem('weperstal_blog_posts') || '[]');
-  posts.splice(idx, 1);
-  localStorage.setItem('weperstal_blog_posts', JSON.stringify(posts));
-  renderAdminBlogList();
-  if (typeof renderBlogPosts === 'function') renderBlogPosts();
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  if (document.getElementById('blogForm')) {
-    renderAdminBlogList();
-    document.getElementById('blogForm').addEventListener('submit', saveBlogPost);
-  }
-});
+// Admin-specific logic is now handled in admin.html via a module script (Supabase auth + CRUD)
 
 // Hamburger menu functionality
 document.addEventListener('DOMContentLoaded', function() {

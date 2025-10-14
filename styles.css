@@ -315,9 +315,13 @@ html {
 /* Team Section */
 .team-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(2, minmax(240px, 320px));
+    gap: 1.5rem;
     margin-top: 2rem;
+    justify-content: center;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
 }
 .team-member {
     background: #F5F1E8;
@@ -413,7 +417,8 @@ html {
     margin: 0 auto;
 }
 .contact-form input,
-.contact-form textarea {
+.contact-form textarea,
+.contact-form select {
     padding: 0.8rem;
     border-radius: 8px;
     border: 1.5px solid #9CAF88;
@@ -953,15 +958,18 @@ html {
 .blog-form {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 10px;
     background: #fff;
     border-radius: 16px;
     padding: 2rem;
     box-shadow: 0 2px 8px rgba(107,142,107,0.08);
     margin-bottom: 2.5rem;
+    align-items: center;
+    text-align: center;
 }
 .blog-form input,
-.blog-form textarea {
+.blog-form textarea,
+.blog-form select {
     padding: 0.8rem;
     border-radius: 8px;
     border: 1.5px solid #9CAF88;
@@ -969,9 +977,11 @@ html {
     font-family: inherit;
     background: #F5F1E8;
     color: #2D4A2D;
+    width: 280px;
+    text-align: left;
 }
 .blog-form button {
-    align-self: flex-end;
+    align-self: center;
 }
 .admin-blog-list {
     display: flex;
@@ -1013,6 +1023,411 @@ html {
 .admin-blog-actions button:hover {
     background: #6B8E6B;
     color: #fff;
+}
+
+/* Image Upload Modal */
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: #fff;
+    border-radius: 16px;
+    padding: 0;
+    max-width: 90%;
+    max-height: 90%;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+    background: #6B8E6B;
+    color: white;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.close {
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close:hover {
+    opacity: 0.7;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+#imagePreview img {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 8px;
+}
+
+#cropContainer {
+    position: relative;
+    overflow: hidden;
+}
+
+.crop-controls {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+/* Drop Zone Styling */
+.drop-zone {
+    border: 3px dashed #9CAF88;
+    background-color: #F9F9F9;
+    padding: 3rem 2rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.drop-zone:hover {
+    border-color: #6B8E6B;
+    background-color: #F5F1E8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(107, 142, 107, 0.15);
+}
+
+.drop-zone.dragover {
+    border-color: #2D4A2D;
+    background-color: #E8DCC4;
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(45, 74, 45, 0.2);
+}
+
+.drop-zone-content p {
+    margin: 0.5rem 0;
+    color: #555;
+    font-size: 1.1rem;
+}
+
+.choose-file-btn {
+    background: #6B8E6B !important;
+    color: white !important;
+    margin-top: 1rem;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.choose-file-btn:hover {
+    background: #5a7a5a !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(107, 142, 107, 0.3);
+}
+
+.file-name-display {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #6B8E6B;
+    font-weight: 500;
+}
+
+/* Button Improvements */
+.cta-btn {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cta-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Specific button styles */
+.crop-btn {
+    background: #2D4A2D !important;
+    color: white !important;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+}
+
+.crop-btn:hover {
+    background: #1a2f1a !important;
+    box-shadow: 0 4px 12px rgba(45, 74, 45, 0.3);
+}
+
+.cancel-btn {
+    background: #E8DCC4 !important;
+    color: #2D4A2D !important;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+}
+
+.cancel-btn:hover {
+    background: #d1c4b0 !important;
+    box-shadow: 0 4px 12px rgba(232, 220, 196, 0.3);
+}
+
+/* Upload buttons in forms */
+.cta-btn[style*="background: #E8DCC4"] {
+    background: #E8DCC4 !important;
+    color: #2D4A2D !important;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.cta-btn[style*="background: #E8DCC4"]:hover {
+    background: #d1c4b0 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(232, 220, 196, 0.3);
+}
+
+/* Main form submit buttons */
+.cta-btn[style*="background: #6B8E6B"]:not(.crop-btn):not(.choose-file-btn) {
+    background: #6B8E6B !important;
+    color: white !important;
+    padding: 0.8rem 2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.cta-btn[style*="background: #6B8E6B"]:not(.crop-btn):not(.choose-file-btn):hover {
+    background: #5a7a5a !important;
+    box-shadow: 0 4px 12px rgba(107, 142, 107, 0.3);
+}
+
+/* Admin action buttons */
+.admin-blog-actions button {
+    background: #E8DCC4 !important;
+    color: #2D4A2D !important;
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.admin-blog-actions button:hover {
+    background: #d1c4b0 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(232, 220, 196, 0.3);
+}
+
+/* Auth buttons */
+#adminSignIn, #adminSignUp, #adminSignOut {
+    transition: all 0.3s ease;
+    font-weight: 600;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+}
+
+#adminSignIn:hover, #adminSignUp:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(107, 142, 107, 0.3);
+}
+
+#adminSignOut:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(232, 220, 196, 0.3);
+}
+
+/* Admin Status Pill */
+.admin-status {
+    display: flex;
+    align-items: center;
+}
+
+.status-pill {
+    background: #9CAF88;
+    color: white;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(156, 175, 136, 0.3);
+}
+
+/* Auth Buttons Layout */
+.auth-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.signup-btn {
+    background: transparent !important;
+    color: #6B8E6B !important;
+    border: 1px solid #9CAF88 !important;
+    padding: 0.6rem 1.5rem !important;
+    font-size: 0.9rem !important;
+    font-weight: 400 !important;
+    border-radius: 6px !important;
+    transition: all 0.3s ease !important;
+    width: 200px !important;
+    text-align: center !important;
+}
+
+.signup-btn:hover {
+    background: #F5F1E8 !important;
+    border-color: #6B8E6B !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 6px rgba(107, 142, 107, 0.2) !important;
+}
+
+.signin-btn {
+    background: #6B8E6B !important;
+    color: white !important;
+    border: none !important;
+    padding: 0.8rem 2rem !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    border-radius: 25px !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 2px 8px rgba(107, 142, 107, 0.3) !important;
+    width: 200px !important;
+    text-align: center !important;
+}
+
+.signin-btn:hover {
+    background: #5a7a5a !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(107, 142, 107, 0.4) !important;
+}
+
+.signout-btn {
+    background: #E8DCC4 !important;
+    color: #2D4A2D !important;
+    border: none !important;
+    padding: 0.6rem 1.5rem !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    border-radius: 20px !important;
+    transition: all 0.3s ease !important;
+    width: 200px !important;
+    text-align: center !important;
+}
+
+.signout-btn:hover {
+    background: #d1c4b0 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 3px 8px rgba(232, 220, 196, 0.3) !important;
+}
+
+/* Admin Content Visibility */
+.admin-content {
+    transition: opacity 0.3s ease;
+}
+
+/* Post Status Indicators */
+.admin-blog-status {
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.status-visible {
+    color: #6B8E6B;
+    background: #E8F5E8;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+.status-hidden {
+    color: #B8860B;
+    background: #FFF8DC;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+.hidden-post {
+    opacity: 0.7;
+    border-left: 4px solid #B8860B;
+}
+
+/* Button Styles */
+.toggle-btn {
+    background: #6B8E6B !important;
+    color: white !important;
+    border: none !important;
+    padding: 0.4rem 0.8rem !important;
+    border-radius: 6px !important;
+    font-size: 0.85rem !important;
+    margin-right: 0.5rem !important;
+}
+
+.toggle-btn:hover {
+    background: #5a7a5a !important;
+    transform: translateY(-1px) !important;
+}
+
+.edit-btn {
+    background: #E8DCC4 !important;
+    color: #2D4A2D !important;
+    border: none !important;
+    padding: 0.4rem 0.8rem !important;
+    border-radius: 6px !important;
+    font-size: 0.85rem !important;
+    margin-right: 0.5rem !important;
+}
+
+.edit-btn:hover {
+    background: #d1c4b0 !important;
+    transform: translateY(-1px) !important;
+}
+
+.delete-btn {
+    background: #ff6b6b !important;
+    color: white !important;
+    border: none !important;
+    padding: 0.4rem 0.8rem !important;
+    border-radius: 6px !important;
+    font-size: 0.85rem !important;
+}
+
+.delete-btn:hover {
+    background: #ff5252 !important;
+    transform: translateY(-1px) !important;
 }
 
 /* FAQ base styles */
