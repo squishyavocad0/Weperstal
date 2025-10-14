@@ -270,12 +270,6 @@ async function renderBlogPosts() {
       return;
     }
     if (blogEmpty) blogEmpty.style.display = 'none';
-  } catch (e) {
-    console.log('API not available, showing empty blog');
-    blogGrid.innerHTML = '';
-    if (blogEmpty) blogEmpty.style.display = '';
-    return;
-  }
     blogGrid.innerHTML = posts.map(post => `
       <div class="blog-card">
         <img class="blog-image" src="${post.image || 'Images/header.jpg'}" alt="${post.title}">
@@ -285,6 +279,7 @@ async function renderBlogPosts() {
       </div>
     `).join('');
   } catch (e) {
+    console.log('API not available, showing empty blog');
     blogGrid.innerHTML = '';
     if (blogEmpty) blogEmpty.style.display = '';
   }

@@ -225,7 +225,7 @@
           const isEditing = !!editingId;
           
           try {
-            const url = isEditing ? `${SUPABASE_URL}/rest/v1/posts/${editingId}` : `${SUPABASE_URL}/rest/v1/posts`;
+            const url = isEditing ? `/api/posts/${editingId}` : '/api/posts';
             const method = isEditing ? 'PUT' : 'POST';
             
             const response = await fetch(url, {
@@ -242,7 +242,7 @@
               await loadAdminPosts();
             } else {
               const result = await response.json();
-              alert('Error: ' + result.error);
+              alert('Error: ' + (result.error || 'Unknown error occurred'));
             }
           } catch (error) {
             alert('Network error: ' + error.message);
@@ -389,7 +389,7 @@
               await loadAnimals();
             } else {
               const result = await response.json();
-              alert('Error: ' + result.error);
+              alert('Error: ' + (result.error || 'Unknown error occurred'));
             }
           } catch (error) {
             alert('Network error: ' + error.message);
@@ -474,7 +474,6 @@
 
       // Make functions global so they can be called from onclick
       window.openImageUpload = function(targetFieldId) {
-        console.log('openImageUpload called with target:', targetFieldId);
         currentTargetField = targetFieldId;
         document.getElementById('imageUploadModal').style.display = 'flex';
         document.getElementById('imageFileInput').value = '';
@@ -487,7 +486,6 @@
           cropper.destroy();
           cropper = null;
         }
-        console.log('Modal opened and reset');
       }
 
       window.closeImageModal = function() {
@@ -504,18 +502,11 @@
       const imageFileInput = document.getElementById('imageFileInput');
       const fileNameDisplay = document.getElementById('fileNameDisplay');
       
-      console.log('Elements found:', {
-        dropZone: !!dropZone,
-        imageFileInput: !!imageFileInput,
-        fileNameDisplay: !!fileNameDisplay
-      });
 
       // File input change
       imageFileInput.addEventListener('change', function(e) {
-        console.log('File input changed');
         const file = e.target.files[0];
         if (file) {
-          console.log('File selected:', file.name);
           handleFileSelection(file);
         }
       });
@@ -542,38 +533,28 @@
 
       // Click to open file dialog (only on the drop zone background, not buttons)
       dropZone.addEventListener('click', function(e) {
-        console.log('Drop zone clicked, target:', e.target);
         // Only trigger if clicking on the drop zone background or the text
         if (e.target === dropZone || e.target.tagName === 'P') {
-          console.log('Triggering file input click');
           imageFileInput.click();
         }
       });
 
       function handleFileSelection(file) {
-        console.log('handleFileSelection called with:', file.name, file.type);
-        
         if (!file.type.startsWith('image/')) {
           alert('Alleen afbeeldingen zijn toegestaan!');
           return;
         }
         
         fileNameDisplay.textContent = file.name;
-        console.log('Filename updated, starting file reader');
         
         const reader = new FileReader();
         reader.onload = function(e) {
-          console.log('File reader loaded, switching to crop section');
-          
           // Show crop section immediately
           document.querySelector('.upload-section').style.display = 'none';
           document.querySelector('.crop-section').style.display = 'block';
           
-          console.log('Sections switched, initializing cropper in 100ms');
-          
           // Initialize cropper
           setTimeout(() => {
-            console.log('Creating crop image element');
             const cropImg = document.createElement('img');
             cropImg.src = e.target.result;
             cropImg.id = 'cropImage';
@@ -586,7 +567,6 @@
               cropper.destroy();
             }
             
-            console.log('Initializing Cropper.js');
             cropper = new Cropper(cropImg, {
               aspectRatio: 16 / 9,
               viewMode: 1,
@@ -600,7 +580,6 @@
               cropBoxResizable: true,
               toggleDragModeOnDblclick: false,
             });
-            console.log('Cropper initialized successfully');
           }, 100);
         };
         reader.readAsDataURL(file);
