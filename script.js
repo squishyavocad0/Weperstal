@@ -94,7 +94,17 @@ async function fetchDieren() {
     if (!res.ok) throw new Error('Failed to load animals');
     dieren = await res.json();
   } catch (e) {
-    dieren = [];
+    console.log('API not available, using fallback data');
+    // Fallback data when API is not available
+    dieren = [
+      {
+        id: 'fallback-1',
+        type: 'horse',
+        name: 'Balou',
+        desc: 'Lieve Shetlander die dol is op aandacht en borstelen.',
+        image_url: 'Images/Horse10.jpeg'
+      }
+    ];
   }
 }
 
@@ -260,6 +270,12 @@ async function renderBlogPosts() {
       return;
     }
     if (blogEmpty) blogEmpty.style.display = 'none';
+  } catch (e) {
+    console.log('API not available, showing empty blog');
+    blogGrid.innerHTML = '';
+    if (blogEmpty) blogEmpty.style.display = '';
+    return;
+  }
     blogGrid.innerHTML = posts.map(post => `
       <div class="blog-card">
         <img class="blog-image" src="${post.image || 'Images/header.jpg'}" alt="${post.title}">
