@@ -176,9 +176,38 @@ app.delete('/api/posts/:id', authenticateUser, async (req, res) => {
   res.status(204).end();
 });
 
-// Serve index.html for root path
+// Serve the main page
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Serve other HTML pages
+app.get('/admin.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+app.get('/about.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'about.html'));
+});
+
+app.get('/contact.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'contact.html'));
+});
+
+app.get('/dieren.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dieren.html'));
+});
+
+app.get('/blog.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'blog.html'));
+});
+
+app.get('/activiteiten.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'activiteiten.html'));
+});
+
+app.get('/Bedankt.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'Bedankt.html'));
 });
 
 app.listen(PORT, () => {
