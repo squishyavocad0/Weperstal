@@ -225,7 +225,7 @@
           const isEditing = !!editingId;
           
           try {
-            const url = isEditing ? `/api/posts/${editingId}` : '/api/posts';
+            const url = isEditing ? `${SUPABASE_URL}/rest/v1/posts/${editingId}` : `${SUPABASE_URL}/rest/v1/posts`;
             const method = isEditing ? 'PUT' : 'POST';
             
             const response = await fetch(url, {
