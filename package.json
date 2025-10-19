@@ -2,10 +2,10 @@
   "name": "weperstal",
   "version": "1.0.0",
   "description": "Weperstal website with backend",
-  "main": "server.js",
+  "main": "app.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "node app.js",
+    "dev": "node app.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.75.0",
