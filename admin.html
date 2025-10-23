@@ -5,6 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <style>
+        .signup-btn {
+            background: transparent !important;
+            border: none !important;
+            color: #6B8E6B !important;
+            font-weight: 400 !important;
+            margin-top: 0.3rem !important;
+            padding: 0 !important;
+            text-decoration: none !important;
+            font-size: 0.9rem !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+            filter: none !important;
+            outline: none !important;
+        }
+        
+        .signup-btn:hover {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }
+        
+        .nav-signout-btn {
+            background: transparent !important;
+            border: 1px solid #6B8E6B !important;
+            color: #6B8E6B !important;
+            padding: 0.5rem 1rem !important;
+            border-radius: 4px !important;
+            font-size: 0.9rem !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .nav-signout-btn:hover {
+            background: #6B8E6B !important;
+            color: white !important;
+        }
+    </style>
     <title>Weperstal Blog Admin</title>
 </head>
 <body>
@@ -23,17 +62,19 @@
             <li id="adminStatus" class="admin-status" style="display: none;">
                 <span class="status-pill">Ingelogd</span>
             </li>
+            <li id="navSignOut" class="nav-signout" style="display: none;">
+                <button id="adminSignOut" class="nav-signout-btn" type="button">Uitloggen</button>
+            </li>
         </ul>
     </nav>
-    <section class="section blog-admin-section">
-        <div id="adminAuth" class="blog-form" style="max-width:480px; margin:0 auto 2rem;">
+    <section class="section blog-admin-section" style="min-height: 100vh;">
+        <div id="adminAuth" class="blog-form" style="max-width:480px; margin:0 auto 2rem; padding: 1.5rem;">
             <h3>Admin login</h3>
             <input type="email" id="adminEmail" placeholder="E-mail" required>
             <input type="password" id="adminPassword" placeholder="Wachtwoord" required>
             <div class="auth-buttons">
-                <button id="adminSignUp" class="cta-btn signup-btn" type="button">Account maken</button>
                 <button id="adminSignIn" class="cta-btn signin-btn" type="button">Inloggen</button>
-                <button id="adminSignOut" class="cta-btn signout-btn" type="button" style="display:none;">Uitloggen</button>
+                <button id="adminSignUp" class="cta-btn signup-btn" type="button">Account maken</button>
             </div>
             <div id="adminAuthMsg" style="margin-top:0.5rem; color:#6B8E6B;"></div>
         </div>
@@ -138,6 +179,8 @@
       const emailEl   = document.getElementById('adminEmail');
       const passEl    = document.getElementById('adminPassword');
       const msgEl     = document.getElementById('adminAuthMsg');
+      const adminAuth = document.getElementById('adminAuth');
+      const navSignOut = document.getElementById('navSignOut');
 
       let accessToken = null;
 
@@ -157,6 +200,8 @@
         
         if (accessToken) {
           statusPill.style.display = 'block';
+          navSignOut.style.display = 'block';
+          adminAuth.style.display = 'none';
           console.log('User logged in, binding forms...');
           
           // Show admin content
@@ -170,6 +215,8 @@
           loadAnimals();
         } else {
           statusPill.style.display = 'none';
+          navSignOut.style.display = 'none';
+          adminAuth.style.display = 'block';
           console.log('User not logged in');
           
           // Hide admin content
@@ -207,6 +254,22 @@
         accessToken = null;
         msgEl.textContent = 'Uitgelogd';
         await refreshSessionUI();
+      });
+
+      // Add Enter key functionality to password field
+      passEl?.addEventListener('keypress', async (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          msgEl.textContent = 'Bezig met inloggen...';
+          const { error } = await supabase.auth.signInWithPassword({
+            email: emailEl.value.trim(),
+            password: passEl.value
+          });
+          if (error) { msgEl.textContent = error.message; return; }
+          msgEl.textContent = 'Ingelogd';
+          passEl.value = '';
+          await refreshSessionUI();
+        }
       });
 
       function bindBlogForm() {
