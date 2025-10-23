@@ -49,16 +49,23 @@ const upload = multer({
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 const supabaseAdmin = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-// Auth middleware: verify Supabase access token
-function authenticateUser(req, res, next) {
+// Auth middleware: verify Supabase access token using Supabase client
+async function authenticateUser(req, res, next) {
   const authHeader = req.headers.authorization || '';
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
   if (!token) return res.status(401).json({ error: 'No token provided' });
+  
   try {
-    const decoded = jwt.verify(token, process.env.SUPABASE_JWT_SECRET);
-    req.user = decoded;
+    // Use Supabase client to verify the token
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+    if (error || !user) {
+      console.log('Token verification failed:', error?.message);
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+    req.user = user;
     next();
-  } catch {
+  } catch (error) {
+    console.log('Auth error:', error.message);
     return res.status(401).json({ error: 'Invalid token' });
   }
 }
