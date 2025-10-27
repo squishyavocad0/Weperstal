@@ -70,7 +70,7 @@
     <section class="section blog-admin-section" style="min-height: 100vh;">
         <div id="adminAuth" class="blog-form" style="max-width:480px; margin:0 auto 2rem; padding: 1.5rem;">
             <h3>Admin login</h3>
-            <input type="email" id="adminEmail" placeholder="E-mail" required>
+            <input type="email" id="adminEmail" placeholder="E-mail" required style="margin-bottom: 1rem;">
             <input type="password" id="adminPassword" placeholder="Wachtwoord" required>
             <div class="auth-buttons">
                 <button id="adminSignIn" class="cta-btn signin-btn" type="button">Inloggen</button>
@@ -81,42 +81,47 @@
         
         <div class="admin-content">
             <h2>Verhalen & Dieren beheren</h2>
-            <p style="color:#6B8E6B; margin-bottom:2rem; font-style:italic;">Beheer je verhalen en dieren op een rustige, overzichtelijke manier</p>
+            <p style="color:#6B8E6B; margin-bottom:3rem; font-style:italic;">Beheer je verhalen en dieren op een rustige, overzichtelijke manier</p>
+            
+            <!-- Verhalen Sectie -->
+            <h3 style="margin-bottom:1.5rem;">Verhalen</h3>
             <form id="blogForm" class="blog-form">
-            <input type="text" id="blogTitle" placeholder="Titel" required>
-            <input type="date" id="blogDate" required>
-            <textarea id="blogStory" placeholder="Verhaal" rows="5" required></textarea>
-            <div style="display: flex; gap: 0.5rem; align-items: center;">
-                <input type="text" id="blogImage" placeholder="Afbeelding URL of upload via knop" style="flex: 1;">
-                <button type="button" onclick="openImageUpload('blogImage')" class="cta-btn" style="background: #E8DCC4; color: #2D4A2D; white-space: nowrap;">📷 Upload</button>
-            </div>
-            <button type="submit" class="cta-btn">Plaats verhaal</button>
-        </form>
-        <h3>Bestaande verhalen</h3>
-        <div id="adminBlogList" class="admin-blog-list"></div>
-        
-        <h2 style="margin-top: 3rem;">Dierenbeheer</h2>
-        <form id="animalForm" class="blog-form">
-            <select id="animalType" required>
-                <option value="">Kies dier type...</option>
-                <option value="horse">Paard</option>
-                <option value="pony">Pony</option>
-                <option value="dog">Hond</option>
-                <option value="cat">Kat</option>
-                <option value="sheep">Schaap</option>
-                <option value="chicken">Kip</option>
-                <option value="fish">Vis</option>
-            </select>
-            <input type="text" id="animalName" placeholder="Naam" required>
-            <input type="text" id="animalDesc" placeholder="Beschrijving">
-            <div style="display: flex; gap: 0.5rem; align-items: center;">
-                <input type="text" id="animalImage" placeholder="Afbeelding URL of upload via knop" style="flex: 1;">
-                <button type="button" onclick="openImageUpload('animalImage')" class="cta-btn" style="background: #E8DCC4; color: #2D4A2D; white-space: nowrap;">📷 Upload</button>
-            </div>
-            <button type="submit" class="cta-btn">Dier toevoegen</button>
-        </form>
-        <h3>Bestaande dieren</h3>
-        <div id="adminAnimalList" class="admin-blog-list"></div>
+                <input type="text" id="blogTitle" placeholder="Titel" required>
+                <input type="date" id="blogDate" required style="color-scheme: light dark;">
+                <label for="blogDate" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; display: block;">📅 Datum selecteren</label>
+                <textarea id="blogStory" placeholder="Verhaal" rows="5" required></textarea>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <input type="text" id="blogImage" placeholder="Afbeelding URL of upload via knop" style="flex: 1;">
+                    <button type="button" onclick="openImageUpload('blogImage')" class="cta-btn" style="background: #E8DCC4; color: #2D4A2D; white-space: nowrap;">📷 Upload</button>
+                </div>
+                <button type="submit" class="cta-btn">Plaats verhaal</button>
+            </form>
+            <h4 style="margin-top:2rem; margin-bottom:1rem;">Bestaande verhalen</h4>
+            <div id="adminBlogList" class="admin-blog-list"></div>
+            
+            <!-- Dieren Sectie -->
+            <h3 style="margin-top: 4rem; margin-bottom:1.5rem;">Dieren</h3>
+            <form id="animalForm" class="blog-form">
+                <select id="animalType" required>
+                    <option value="">Kies dier type...</option>
+                    <option value="horse">Paard</option>
+                    <option value="pony">Pony</option>
+                    <option value="dog">Hond</option>
+                    <option value="cat">Kat</option>
+                    <option value="sheep">Schaap</option>
+                    <option value="chicken">Kip</option>
+                    <option value="fish">Vis</option>
+                </select>
+                <input type="text" id="animalName" placeholder="Naam" required>
+                <input type="text" id="animalDesc" placeholder="Beschrijving">
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <input type="text" id="animalImage" placeholder="Afbeelding URL of upload via knop" style="flex: 1;">
+                    <button type="button" onclick="openImageUpload('animalImage')" class="cta-btn" style="background: #E8DCC4; color: #2D4A2D; white-space: nowrap;">📷 Upload</button>
+                </div>
+                <button type="submit" class="cta-btn">Dier toevoegen</button>
+            </form>
+            <h4 style="margin-top:2rem; margin-bottom:1rem;">Bestaande dieren</h4>
+            <div id="adminAnimalList" class="admin-blog-list"></div>
         </div>
     </section>
 
@@ -140,7 +145,7 @@
                     <div id="imagePreview" style="max-width: 100%; margin: 1rem 0;"></div>
                 </div>
                 <div class="crop-section" style="display: none;">
-                    <div id="cropContainer" style="max-width: 100%; max-height: 400px;"></div>
+                    <div id="cropContainer" style="max-width: 100%; max-height: 70vh;"></div>
                     <div class="crop-controls" style="margin-top: 1rem;">
                         <button id="cropImageBtn" class="cta-btn crop-btn">Afbeelding bijsnijden</button>
                         <button onclick="closeImageModal()" class="cta-btn cancel-btn">Annuleren</button>

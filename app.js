@@ -72,18 +72,48 @@ async function authenticateUser(req, res, next) {
 
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 
-// Image upload endpoint
-app.post('/api/upload', authenticateUser, upload.single('image'), (req, res) => {
+// Image upload endpoint - Upload to Supabase Storage
+app.post('/api/upload', authenticateUser, upload.single('image'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No image file provided' });
   }
   
-  const imageUrl = `/uploads/${req.file.filename}`;
-  res.json({ 
-    success: true, 
-    imageUrl: imageUrl,
-    filename: req.file.filename 
-  });
+  try {
+    // Upload to Supabase Storage
+    const fileBuffer = fs.readFileSync(req.file.path);
+    const fileName = req.file.filename;
+    
+    const { data: uploadData, error } = await supabaseAdmin
+      .storage
+      .from('images')
+      .upload(fileName, fileBuffer, {
+        contentType: req.file.mimetype,
+        upsert: false
+      });
+    
+    // Delete local temp file after upload
+    fs.unlinkSync(req.file.path);
+    
+    if (error) {
+      console.error('Upload error:', error);
+      return res.status(500).json({ error: 'Failed to upload image to storage' });
+    }
+    
+    // Get public URL from Supabase (not async)
+    const { data: urlData } = supabaseAdmin
+      .storage
+      .from('images')
+      .getPublicUrl(fileName);
+    
+    res.json({ 
+      success: true, 
+      imageUrl: urlData.publicUrl,
+      filename: fileName 
+    });
+  } catch (error) {
+    console.error('Upload error:', error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Hidden admin access routes
