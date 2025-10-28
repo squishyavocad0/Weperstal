@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onze Dieren - Weperstal</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="custom-cursor"></div>
+
+    <nav class="nav">
+        <a href="index.html" class="nav-logo">🐴 Weperstal</a>
+        <button class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <ul class="nav-menu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="stories.html">Verhalen</a></li>
+            <li><a href="animals.html">Onze Dieren</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <h1 class="hero-title">Ontmoet Onze Dieren</h1>
+        <p class="hero-subtitle">De liefste pony's, paarden en andere vrienden die bij ons wonen</p>
+    </section>
+
+    <section class="section">
+        <div id="animals-list" class="animal-grid">
+            <!-- Animals will be loaded here from backend -->
+        </div>
+    </section>
+
+    <script>
+        // Animal type translation
+        const typeMap = {
+            horse: 'Paard',
+            pony: 'Pony',
+            dog: 'Hond',
+            cat: 'Kat',
+            sheep: 'Schaap',
+            chicken: 'Kip',
+            fish: 'Vis'
+        };
+        
+        // Load animals from API
+        async function loadAnimals() {
+            try {
+                const res = await fetch('/api/animals');
+                const animals = await res.json();
+                const container = document.getElementById('animals-list');
+                
+                if (!animals.length) {
+                    container.innerHTML = '<p style="text-align: center; color: var(--text-medium); grid-column: 1/-1;">Nog geen dieren toegevoegd.</p>';
+                    return;
+                }
+                
+                container.innerHTML = animals.map(animal => `
+                    <div class="animal-card">
+                        <img src="${animal.image_url || '../Images/Foto_46.jpeg'}" alt="${animal.name}">
+                        <div class="type" style="background: ${getTypeColor(animal.type)};">
+                            ${typeMap[animal.type] || animal.type}
+                        </div>
+                        <h3>${animal.name}</h3>
+                        <p>${animal.desc || ''}</p>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading animals:', error);
+                document.getElementById('animals-list').innerHTML = 
+                    '<p style="text-align: center; color: var(--red); grid-column: 1/-1;">Fout bij laden van dieren.</p>';
+            }
+        }
+        
+        function getTypeColor(type) {
+            const colors = {
+                horse: 'var(--blue)',
+                pony: 'var(--purple)',
+                dog: 'var(--yellow)',
+                cat: 'var(--green)',
+                sheep: 'var(--red)',
+                chicken: 'var(--yellow)',
+                fish: 'var(--blue)'
+            };
+            return colors[type] || 'var(--blue)';
+        }
+        
+        loadAnimals();
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
+

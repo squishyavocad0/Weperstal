@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Weperstal</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .admin-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+        .admin-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--bg-light);
+            border-radius: 12px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            font-family: inherit;
+        }
+        .admin-input:focus {
+            outline: none;
+            border-color: var(--blue);
+        }
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .admin-card {
+            background: var(--bg-light);
+            padding: 1rem;
+            border-radius: 12px;
+            position: relative;
+        }
+        .admin-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, var(--red), #c62828);
+        }
+        #auth-section {
+            max-width: 400px;
+            margin: 5rem auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="custom-cursor"></div>
+
+    <nav class="nav">
+        <a href="index.html" class="nav-logo">🐴 Admin Panel</a>
+        <button class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
+    <!-- Auth Section -->
+    <div id="auth-section" class="admin-section">
+        <h2 style="margin-bottom: 1.5rem;">Inloggen</h2>
+        <input type="email" id="authEmail" class="admin-input" placeholder="E-mail">
+        <input type="password" id="authPassword" class="admin-input" placeholder="Wachtwoord">
+        <button class="btn" onclick="signIn()" style="width: 100%; margin-bottom: 1rem;">Inloggen</button>
+        <button class="btn" onclick="signUp()" style="width: 100%; background: linear-gradient(135deg, var(--green), var(--blue));">Account maken</button>
+        <p id="authMsg" style="margin-top: 1rem; text-align: center; color: var(--text-medium);"></p>
+    </div>
+
+    <!-- Admin Content (hidden until logged in) -->
+    <div id="admin-content" style="display: none;">
+        <section class="section">
+            <!-- Stories Admin -->
+            <div class="admin-section">
+                <h2 style="margin-bottom: 1.5rem;">📝 Verhaal Toevoegen</h2>
+                <input type="text" id="storyTitle" class="admin-input" placeholder="Titel">
+                <input type="date" id="storyDate" class="admin-input">
+                <textarea id="storyText" class="admin-input" rows="5" placeholder="Verhaal"></textarea>
+                <input type="text" id="storyImage" class="admin-input" placeholder="Afbeelding URL">
+                <button class="btn" onclick="addStory()">Verhaal Toevoegen</button>
+            </div>
+
+            <div class="admin-section">
+                <h3>Bestaande Verhalen</h3>
+                <div id="stories-admin" class="admin-grid"></div>
+            </div>
+
+            <!-- Animals Admin -->
+            <div class="admin-section" style="margin-top: 3rem;">
+                <h2 style="margin-bottom: 1.5rem;">🐴 Dier Toevoegen</h2>
+                <select id="animalType" class="admin-input">
+                    <option value="">Kies type...</option>
+                    <option value="horse">Paard</option>
+                    <option value="pony">Pony</option>
+                    <option value="dog">Hond</option>
+                    <option value="cat">Kat</option>
+                </select>
+                <input type="text" id="animalName" class="admin-input" placeholder="Naam">
+                <input type="text" id="animalDesc" class="admin-input" placeholder="Beschrijving">
+                <input type="text" id="animalImage" class="admin-input" placeholder="Afbeelding URL">
+                <button class="btn" onclick="addAnimal()">Dier Toevoegen</button>
+            </div>
+
+            <div class="admin-section">
+                <h3>Bestaande Dieren</h3>
+                <div id="animals-admin" class="admin-grid"></div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Simple auth and CRUD operations
+        let authToken = null;
+        
+        async function signIn() {
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+            const msgEl = document.getElementById('authMsg');
+            
+            try {
+                const res = await fetch('/api/auth/signin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    authToken = data.token;
+                    document.getElementById('auth-section').style.display = 'none';
+                    document.getElementById('admin-content').style.display = 'block';
+                    loadAdminContent();
+                } else {
+                    msgEl.textContent = 'Ongeldige inloggegevens';
+                }
+            } catch (error) {
+                msgEl.textContent = 'Er ging iets mis';
+            }
+        }
+        
+        async function addStory() {
+            const story = {
+                title: document.getElementById('storyTitle').value,
+                date: document.getElementById('storyDate').value,
+                story: document.getElementById('storyText').value,
+                image: document.getElementById('storyImage').value,
+                visible: true
+            };
+            
+            try {
+                await fetch('/api/posts', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(story)
+                });
+                loadAdminContent();
+                document.getElementById('storyTitle').value = '';
+                document.getElementById('storyDate').value = '';
+                document.getElementById('storyText').value = '';
+                document.getElementById('storyImage').value = '';
+            } catch (error) {
+                console.error('Error adding story:', error);
+            }
+        }
+        
+        async function addAnimal() {
+            const animal = {
+                type: document.getElementById('animalType').value,
+                name: document.getElementById('animalName').value,
+                desc: document.getElementById('animalDesc').value,
+                image_url: document.getElementById('animalImage').value
+            };
+            
+            try {
+                await fetch('/api/animals', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(animal)
+                });
+                loadAdminContent();
+                document.getElementById('animalType').value = '';
+                document.getElementById('animalName').value = '';
+                document.getElementById('animalDesc').value = '';
+                document.getElementById('animalImage').value = '';
+            } catch (error) {
+                console.error('Error adding animal:', error);
+            }
+        }
+        
+        async function loadAdminContent() {
+            // Load existing stories and animals
+            try {
+                const [stories, animals] = await Promise.all([
+                    fetch('/api/posts?all=true').then(r => r.json()),
+                    fetch('/api/animals').then(r => r.json())
+                ]);
+                
+                document.getElementById('stories-admin').innerHTML = stories.map(s => `
+                    <div class="admin-card">
+                        <strong>${s.title}</strong>
+                        <p style="margin: 0.5rem 0; font-size: 0.875rem; color: var(--text-medium);">${s.story.substring(0, 50)}...</p>
+                        <div class="admin-actions">
+                            <button class="btn btn-small" onclick="deleteStory('${s.id}')">Verwijderen</button>
+                        </div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('animals-admin').innerHTML = animals.map(a => `
+                    <div class="admin-card">
+                        <strong>${a.name}</strong>
+                        <p style="margin: 0.5rem 0; font-size: 0.875rem; color: var(--text-medium);">${a.desc || ''}</p>
+                        <div class="admin-actions">
+                            <button class="btn btn-small btn-danger" onclick="deleteAnimal('${a.id}')">Verwijderen</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading admin content:', error);
+            }
+        }
+        
+        async function deleteStory(id) {
+            if (!confirm('Weet je zeker dat je dit verhaal wilt verwijderen?')) return;
+            try {
+                await fetch(`/api/posts/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                loadAdminContent();
+            } catch (error) {
+                console.error('Error deleting story:', error);
+            }
+        }
+        
+        async function deleteAnimal(id) {
+            if (!confirm('Weet je zeker dat je dit dier wilt verwijderen?')) return;
+            try {
+                await fetch(`/api/animals/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                loadAdminContent();
+            } catch (error) {
+                console.error('Error deleting animal:', error);
+            }
+        }
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
+

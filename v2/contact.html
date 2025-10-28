@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Weperstal</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="custom-cursor"></div>
+
+    <nav class="nav">
+        <a href="index.html" class="nav-logo">🐴 Weperstal</a>
+        <button class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <ul class="nav-menu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="stories.html">Verhalen</a></li>
+            <li><a href="animals.html">Onze Dieren</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <h1 class="hero-title">Neem Contact Op</h1>
+        <p class="hero-subtitle">Heb je vragen? We helpen je graag verder!</p>
+    </section>
+
+    <section class="section">
+        <div class="contact-form">
+            <form id="contactForm" action="https://formspree.io/f/xwprwbnd" method="POST">
+                <input type="text" name="name" placeholder="Je naam" required>
+                <input type="email" name="email" placeholder="Je e-mailadres" required>
+                <textarea name="message" placeholder="Je bericht" rows="8" required></textarea>
+                <input type="text" name="_gotcha" style="display:none">
+                <button type="submit" class="btn">Versturen ✉️</button>
+            </form>
+        </div>
+    </section>
+
+    <footer style="background: var(--text-dark); color: white; text-align: center; padding: 2rem; margin-top: 4rem;">
+        <p>Email: info@weperstal.nl</p>
+        <p style="margin-top: 0.5rem; color: var(--text-light);">© 2025 Weperstal - Waar kinderdromen waarheid worden</p>
+    </footer>
+
+    <script>
+        // Form submission
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            try {
+                const res = await fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (res.ok) {
+                    alert('Bedankt! We hebben je bericht ontvangen.');
+                    this.reset();
+                } else {
+                    alert('Er ging iets mis. Probeer het later opnieuw.');
+                }
+            } catch (error) {
+                alert('Er ging iets mis. Probeer het later opnieuw.');
+            }
+        });
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
+

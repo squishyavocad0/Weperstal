@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verhalen - Weperstal</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="custom-cursor"></div>
+
+    <nav class="nav">
+        <a href="index.html" class="nav-logo">🐴 Weperstal</a>
+        <button class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <ul class="nav-menu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="stories.html">Verhalen</a></li>
+            <li><a href="animals.html">Onze Dieren</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <h1 class="hero-title">Onze Verhalen</h1>
+        <p class="hero-subtitle">Delen van magische momenten tussen kinderen en onze dieren</p>
+    </section>
+
+    <section class="section story-feed">
+        <div id="stories-list">
+            <!-- Stories will be loaded here from backend -->
+        </div>
+    </section>
+
+    <script>
+        // Load stories from API
+        async function loadStories() {
+            try {
+                const res = await fetch('/api/posts');
+                const stories = await res.json();
+                const container = document.getElementById('stories-list');
+                
+                if (!stories.length) {
+                    container.innerHTML = '<p style="text-align: center; color: var(--text-medium);">Nog geen verhalen beschikbaar.</p>';
+                    return;
+                }
+                
+                container.innerHTML = stories.map(story => `
+                    <div class="story-card">
+                        <div class="story-header">
+                            <div class="story-avatar">🐴</div>
+                            <div>
+                                <strong>Weperstal</strong>
+                                <p class="story-date">${formatDate(story.date)}</p>
+                            </div>
+                        </div>
+                        <h3 style="margin-bottom: 0.5rem; color: var(--text-dark);">${story.title}</h3>
+                        <p style="margin-bottom: 1rem; color: var(--text-medium); line-height: 1.7;">${story.story}</p>
+                        ${story.image ? `<img src="${story.image}" alt="${story.title}" class="story-image">` : ''}
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading stories:', error);
+                document.getElementById('stories-list').innerHTML = 
+                    '<p style="text-align: center; color: var(--red);">Fout bij laden van verhalen.</p>';
+            }
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+        
+        // FAQ toggle
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', function() {
+                const item = this.parentElement;
+                item.classList.toggle('active');
+            });
+        });
+        
+        loadStories();
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
+
