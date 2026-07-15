@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --cream: #f9f5ec;
+  --forest: #56724f;
+  --sage: #afc8a3;
+  --bark: #9b7b5d;
+  --gold: #d6b76a;
+  --ink: #2e3529;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-cream text-ink font-body antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--sage);
+  color: var(--ink);
+}
+
+/* Zichtbare focus voor toetsenbordgebruikers */
+:focus-visible {
+  outline: 2px solid var(--forest);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Scroll-reveal (aangestuurd door <Reveal/>) */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Horizontale slider zonder zichtbare scrollbar */
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Grashalmen wuiven vanaf de voet */
+.grass-blade {
+  transform-origin: bottom center;
+}
+
+/* Verhaaltekst */
+.prose-story p {
+  @apply mb-6 leading-relaxed text-ink/85;
+}
+.prose-story p:first-of-type::first-letter {
+  @apply font-display text-5xl text-forest float-left mr-3 mt-1 leading-none;
+}
+
+/* Respecteer reduced motion overal */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
