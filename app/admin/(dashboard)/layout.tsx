@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient, supabaseConfigured } from "@/lib/supabase/client";
 import { HoofMark } from "@/components/site/Header";
+import UserName from "@/components/admin/UserName";
 
 const nav = [
   { href: "/admin", label: "Overzicht", icon: "🏡" },
@@ -107,10 +108,12 @@ export default function AdminLayout({
               <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </button>
-          <p className="text-sm text-ink/60">
-            Ingelogd als beheerder · wijzigingen zijn direct zichtbaar op de
-            site zodra je publiceert
-          </p>
+          <div className="flex flex-wrap items-center gap-x-2">
+            <UserName />
+            <span className="hidden text-sm text-ink/40 lg:inline">
+              · wijzigingen zijn direct zichtbaar op de site zodra je publiceert
+            </span>
+          </div>
         </header>
         <main className="p-5 md:p-8">{children}</main>
       </div>

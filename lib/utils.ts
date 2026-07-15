@@ -25,3 +25,16 @@ export function formatDate(iso: string) {
     year: "numeric",
   });
 }
+
+/* Nette weergavenaam voor een beheerder: de zelfgekozen naam uit het
+   account, anders het stuk vóór de @ van het e-mailadres. */
+export function displayName(
+  metadataName: unknown,
+  email: string | undefined | null
+) {
+  const chosen = typeof metadataName === "string" ? metadataName.trim() : "";
+  if (chosen) return chosen;
+  const prefix = (email ?? "").split("@")[0].split(/[._+-]/)[0];
+  if (!prefix) return null;
+  return prefix.charAt(0).toUpperCase() + prefix.slice(1);
+}

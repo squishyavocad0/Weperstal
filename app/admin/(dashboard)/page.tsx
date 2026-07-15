@@ -1,7 +1,37 @@
 import Link from "next/link";
 import { createClient, supabaseConfigured } from "@/lib/supabase/server";
+import { displayName } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
+
+async function greeting() {
+  const hour = Number(
+    new Intl.DateTimeFormat("nl-NL", {
+      hour: "numeric",
+      hour12: false,
+      timeZone: "Europe/Amsterdam",
+    }).format(new Date())
+  );
+  const dagdeel =
+    hour < 6
+      ? "Goedenacht"
+      : hour < 12
+        ? "Goedemorgen"
+        : hour < 18
+          ? "Goedemiddag"
+          : "Goedenavond";
+
+  try {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const name = displayName(user?.user_metadata?.full_name, user?.email);
+    return name ? `${dagdeel}, ${name}` : dagdeel;
+  } catch {
+    return dagdeel;
+  }
+}
 
 async function count(table: string) {
   try {
@@ -26,6 +56,7 @@ export default async function AdminHome() {
         count("contact_messages"),
       ])
     : [0, 0, 0, 0, 0];
+  const welkom = configured ? await greeting() : "Goedemorgen";
 
   const cards = [
     { href: "/admin/dieren", label: "Dieren", value: animals, icon: "🐴" },
@@ -37,9 +68,7 @@ export default async function AdminHome() {
 
   return (
     <div>
-      <h1 className="font-display text-3xl text-forest-deep">
-        Goedemorgen, Maria
-      </h1>
+      <h1 className="font-display text-3xl text-forest-deep">{welkom}</h1>
       <p className="mt-2 max-w-xl text-ink/60">
         Hier beheer je alles van de website: de dieren, verhalen, activiteiten
         en teksten. Wat je verbergt, blijft als concept bewaard.
