@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import ImageUpload from "@/components/admin/ImageUpload";
 
 /* ────────────────────────────────────────────────────────────────────────
    Generieke beheercomponent voor Maria.
@@ -18,6 +19,7 @@ export type FieldType =
   | "list"
   | "select"
   | "image"
+  | "images"
   | "date";
 
 export interface FieldConfig {
@@ -302,7 +304,7 @@ function RecordForm({
     const v: Record<string, unknown> = {};
     for (const f of fields) {
       const raw = initial?.[f.key];
-      if (f.type === "list") {
+      if (f.type === "list" || f.type === "images") {
         v[f.key] = Array.isArray(raw) ? (raw as string[]).join(", ") : "";
       } else {
         v[f.key] = raw ?? (f.type === "number" ? 0 : "");
@@ -321,7 +323,7 @@ function RecordForm({
     const out: Record<string, unknown> = {};
     for (const f of fields) {
       const raw = values[f.key];
-      if (f.type === "list") {
+      if (f.type === "list" || f.type === "images") {
         out[f.key] = String(raw)
           .split(",")
           .map((s) => s.trim())
@@ -397,7 +399,54 @@ function Field({
   const base =
     "w-full rounded-2xl border border-sage-light bg-cream-soft px-4 py-3 outline-none transition-colors focus:border-forest";
   const wide =
-    field.type === "textarea" || field.type === "longtext" || field.type === "image";
+    field.type === "textarea" ||
+    field.type === "longtext" ||
+    field.type === "image" ||
+    field.type === "images";
+
+  /* Galerij: komma-gescheiden links achter de schermen, maar Maria ziet
+     gewoon een uploadknop en miniaturen met een verwijderkruisje. */
+  if (field.type === "images") {
+    const urls = String(value ?? "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const removeAt = (i: number) =>
+      onChange(field.key, urls.filter((_, j) => j !== i).join(", "));
+
+    return (
+      <div className="md:col-span-2">
+        <span className="mb-2 block text-sm font-medium text-ink/80">
+          {field.label}
+        </span>
+        {urls.length > 0 && (
+          <ul className="mb-1 flex flex-wrap gap-3">
+            {urls.map((url, i) => (
+              <li key={`${url}-${i}`} className="relative">
+                <span className="block h-20 w-28 overflow-hidden rounded-2xl">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={url} alt="" className="h-full w-full object-cover" />
+                </span>
+                <button
+                  type="button"
+                  onClick={() => removeAt(i)}
+                  aria-label="Foto verwijderen"
+                  className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-bark-deep text-xs text-cream shadow-soft"
+                >
+                  ×
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+        <ImageUpload
+          multiple
+          onUploaded={(added) => onChange(field.key, [...urls, ...added].join(", "))}
+        />
+        {field.help && <p className="mt-1.5 text-xs text-ink/50">{field.help}</p>}
+      </div>
+    );
+  }
 
   return (
     <div className={wide ? "md:col-span-2" : ""}>
@@ -439,6 +488,11 @@ function Field({
           onChange={(e) => onChange(field.key, e.target.value)}
           className={base}
           placeholder={field.type === "image" ? "https://…" : undefined}
+        />
+      )}
+      {field.type === "image" && (
+        <ImageUpload
+          onUploaded={(urls) => onChange(field.key, urls[0] ?? "")}
         />
       )}
       {field.help && <p className="mt-1.5 text-xs text-ink/50">{field.help}</p>}

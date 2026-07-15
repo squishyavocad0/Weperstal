@@ -32,15 +32,16 @@ export default function AdminVerhalen() {
             { key: "author", label: "Auteur", type: "text", required: true },
             {
               key: "cover_url",
-              label: "Omslagfoto (link)",
+              label: "Omslagfoto",
               type: "image",
               required: true,
+              help: "Upload een foto of plak een link.",
             },
             {
               key: "gallery",
-              label: "Extra foto's (links)",
-              type: "list",
-              help: "Meerdere links gescheiden door komma's. Mag leeg blijven.",
+              label: "Extra foto's",
+              type: "images",
+              help: "Upload zoveel foto's als je wilt. Mag leeg blijven.",
             },
             {
               key: "excerpt",
