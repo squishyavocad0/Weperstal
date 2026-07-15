@@ -74,7 +74,9 @@ export default function CollectionManager({
 
   const flash = (m: string) => {
     setMessage(m);
-    setTimeout(() => setMessage(null), 3200);
+    // Foutmeldingen blijven langer staan zodat Maria ze rustig kan lezen.
+    const isError = /mislukt/i.test(m);
+    setTimeout(() => setMessage(null), isError ? 10000 : 3200);
   };
 
   const load = useCallback(async () => {
@@ -162,16 +164,26 @@ export default function CollectionManager({
 
   if (editing || creating) {
     return (
-      <RecordForm
-        fields={fields}
-        singular={singular}
-        initial={editing ?? undefined}
-        onCancel={() => {
-          setEditing(null);
-          setCreating(false);
-        }}
-        onSave={save}
-      />
+      <div>
+        {message && (
+          <p
+            className="mb-4 rounded-2xl bg-gold-soft/50 px-4 py-3 text-sm text-bark-deep"
+            role="alert"
+          >
+            {message}
+          </p>
+        )}
+        <RecordForm
+          fields={fields}
+          singular={singular}
+          initial={editing ?? undefined}
+          onCancel={() => {
+            setEditing(null);
+            setCreating(false);
+          }}
+          onSave={save}
+        />
+      </div>
     );
   }
 

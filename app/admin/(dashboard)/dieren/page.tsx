@@ -37,15 +37,15 @@ export default function AdminDieren() {
             {
               key: "traits",
               label: "Karaktereigenschappen",
-              type: "text",
+              type: "list",
               help: "Gescheiden door komma's, bijv.: Geduldig, Knuffelbaar, Rustig",
             },
             {
               key: "image_url",
-              label: "Foto (link)",
+              label: "Foto",
               type: "image",
               required: true,
-              help: "Plak een link naar de foto, bijvoorbeeld uit Supabase Storage.",
+              help: "Upload een foto of plak een link.",
             },
             { key: "bio", label: "Korte bio", type: "textarea", required: true },
           ]}

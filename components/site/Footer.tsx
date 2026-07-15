@@ -63,7 +63,13 @@ export default function Footer() {
         </div>
         <div className="border-t border-cream/10 py-5 text-center text-xs text-cream/50">
           © {new Date().getFullYear()} De Weperstal · Gemaakt met liefde voor
-          dier, kind en natuur
+          dier, kind en natuur ·{" "}
+          <Link
+            href="/admin"
+            className="transition-colors hover:text-cream/80"
+          >
+            Beheer
+          </Link>
         </div>
       </div>
     </footer>
