@@ -19,7 +19,7 @@ export default function AdminVerhalen() {
           orderBy="published_at"
           orderAsc={false}
           orderable={false}
-          previewPath={(row) => `/admin/voorbeeld/verhaal/${row.slug}`}
+          previewBase="/admin/voorbeeld/verhaal"
           fields={[
             { key: "title", label: "Titel", type: "text", required: true },
             {
