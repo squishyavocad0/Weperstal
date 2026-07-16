@@ -14,6 +14,7 @@ const nav = [
   { href: "/admin/activiteiten", label: "Activiteiten", icon: "🎠" },
   { href: "/admin/team", label: "Team", icon: "👋" },
   { href: "/admin/teksten", label: "Teksten", icon: "✏️" },
+  { href: "/admin/faq", label: "Vragen", icon: "💬" },
   { href: "/admin/berichten", label: "Berichten", icon: "✉️" },
 ];
 

@@ -50,6 +50,9 @@ interface Props {
   orderable?: boolean;
   orderBy?: string;
   orderAsc?: boolean;
+  /* Optioneel: pad naar een voorbeeldweergave van dit record,
+     bijv. om een conceptverhaal te bekijken vóór publicatie. */
+  previewPath?: (row: Row) => string;
 }
 
 export default function CollectionManager({
@@ -63,6 +66,7 @@ export default function CollectionManager({
   orderable = true,
   orderBy = "sort_order",
   orderAsc = true,
+  previewPath,
 }: Props) {
   const supabase = useMemo(() => createClient(), []);
   const [rows, setRows] = useState<Row[]>([]);
@@ -271,6 +275,16 @@ export default function CollectionManager({
                 {row.published ? "Gepubliceerd" : "Concept"}
               </span>
               <div className="flex shrink-0 gap-2">
+                {previewPath && (
+                  <a
+                    href={previewPath(row)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="rounded-full border border-sage-light px-3.5 py-1.5 text-xs font-medium text-ink/70 transition-colors hover:bg-sage-whisper"
+                  >
+                    Bekijken
+                  </a>
+                )}
                 <button
                   onClick={() => togglePublished(row)}
                   className="rounded-full border border-sage-light px-3.5 py-1.5 text-xs font-medium text-ink/70 transition-colors hover:bg-sage-whisper"

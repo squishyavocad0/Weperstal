@@ -27,6 +27,7 @@ export default function Footer() {
                 ["/activiteiten", "Activiteiten"],
                 ["/dieren", "Onze dieren"],
                 ["/verhalen", "Verhalen"],
+                ["/veelgestelde-vragen", "Veelgestelde vragen"],
                 ["/contact", "Contact"],
               ].map(([href, label]) => (
                 <li key={href}>

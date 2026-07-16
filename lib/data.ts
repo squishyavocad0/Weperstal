@@ -3,10 +3,11 @@ import {
   seedActivities,
   seedAnimals,
   seedContent,
+  seedFaqs,
   seedStories,
   seedTeam,
 } from "./seed";
-import type { Activity, Animal, Story, TeamMember } from "./types";
+import type { Activity, Animal, Faq, Story, TeamMember } from "./types";
 
 // Alle publieke data loopt via deze laag. Is Supabase gekoppeld, dan komt
 // de content uit de database; zo niet, dan uit de ingebouwde voorbeeldcontent.
@@ -62,6 +63,10 @@ export async function getStory(slug: string): Promise<Story | null> {
 
 export async function getTeam(): Promise<TeamMember[]> {
   return fromTable<TeamMember>("team_members", seedTeam);
+}
+
+export async function getFaqs(): Promise<Faq[]> {
+  return fromTable<Faq>("faqs", seedFaqs);
 }
 
 export async function getContent(): Promise<Record<string, string>> {

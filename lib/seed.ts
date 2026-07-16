@@ -384,6 +384,10 @@ export const seedTeam: TeamMember[] = [
   },
 ];
 
+/* Geen voorbeeldvragen: de FAQ verschijnt pas op de site zodra Maria
+   zelf vragen publiceert in het beheer. */
+export const seedFaqs: import("./types").Faq[] = [];
+
 export const seedContent: Record<string, string> = {
   hero_title: "Welkom bij De Weperstal",
   hero_subtitle: "Een plek waar kinderen dromen beleven tussen de paarden en pony's.",

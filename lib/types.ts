@@ -64,6 +64,14 @@ export interface TeamMember {
   sort_order: number;
 }
 
+export interface Faq {
+  id: string;
+  question: string;
+  answer: string;
+  published: boolean;
+  sort_order: number;
+}
+
 export interface SiteContent {
   key: string;
   value: string;
