@@ -1,4 +1,5 @@
 import CollectionManager from "@/components/admin/CollectionManager";
+import AlleenBeheerder from "@/components/admin/AlleenBeheerder";
 
 export default function AdminTeam() {
   return (
@@ -8,6 +9,7 @@ export default function AdminTeam() {
         Beheer wie er op de pagina “Over ons” staan. Sleep om de volgorde te
         wijzigen.
       </p>
+      <AlleenBeheerder>
       <div className="mt-8">
         <CollectionManager
           table="team_members"
@@ -34,6 +36,7 @@ export default function AdminTeam() {
           ]}
         />
       </div>
+      </AlleenBeheerder>
     </div>
   );
 }

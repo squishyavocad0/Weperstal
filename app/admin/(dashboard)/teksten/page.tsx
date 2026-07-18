@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { createClient, supabaseConfigured } from "@/lib/supabase/client";
+import AlleenBeheerder from "@/components/admin/AlleenBeheerder";
 import { seedContent } from "@/lib/seed";
 
 /* Vriendelijke labels zodat Maria precies weet welke tekst waar staat. */
@@ -74,6 +75,7 @@ export default function AdminTeksten() {
         Pas hier de vaste teksten van de website aan. Bij elk veld staat waar
         de tekst precies verschijnt.
       </p>
+      <AlleenBeheerder>
 
       {!supabaseConfigured && (
         <p className="mt-6 rounded-organic bg-gold-soft/40 p-5 text-sm text-bark-deep">
@@ -130,6 +132,7 @@ export default function AdminTeksten() {
               : "Alles opgeslagen"}
         </button>
       </div>
+      </AlleenBeheerder>
     </div>
   );
 }

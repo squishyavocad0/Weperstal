@@ -2,22 +2,21 @@
 
 import { useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import CropDialog from "@/components/admin/CropDialog";
 
 /* ────────────────────────────────────────────────────────────────────────
-   Foto-upload voor het beheer. Uploadt naar de publieke 'media'-bucket
-   in Supabase Storage en geeft de publieke links terug, zodat Maria
-   foto's van haar eigen computer of telefoon kan gebruiken zonder
-   ergens anders links te hoeven regelen.
+   Foto-upload voor het beheer. Elke gekozen foto gaat eerst door het
+   bijsnijvenster (met het juiste kader voor de plek op de site) en
+   wordt daarna geüpload naar de publieke 'media'-bucket in Supabase
+   Storage. De publieke links komen terug via onUploaded.
    ──────────────────────────────────────────────────────────────────────── */
 
-/* Grote foto's (telefoons maken al snel 5–10 MB) worden vóór het
-   uploaden stilletjes verkleind naar webformaat: sneller voor
-   bezoekers en zuiniger met opslagruimte. Lukt verkleinen niet
-   (bijv. een formaat dat de browser niet kan lezen), dan uploaden
-   we gewoon het origineel. */
 const MAX_EDGE = 1800;
 const SKIP_BELOW_BYTES = 500 * 1024;
 
+/* Grote foto's (telefoons maken al snel 5–10 MB) worden vóór het
+   uploaden verkleind naar webformaat. Lukt dat niet (bijv. een formaat
+   dat de browser niet kan lezen), dan uploaden we het origineel. */
 async function shrinkImage(file: File): Promise<File | Blob> {
   if (file.type === "image/gif" || file.size < SKIP_BELOW_BYTES) return file;
   try {
@@ -39,27 +38,58 @@ async function shrinkImage(file: File): Promise<File | Blob> {
   }
 }
 
+interface ReadyUpload {
+  data: File | Blob;
+  origName: string;
+}
+
 export default function ImageUpload({
   multiple = false,
+  aspect = 4 / 3,
   onUploaded,
 }: {
   multiple?: boolean;
+  /* Verhouding van het bijsnijkader; gelijk aan hoe de foto op de
+     site wordt getoond (standaard 4:3, verhaalomslag 16:9). */
+  aspect?: number;
   onUploaded: (urls: string[]) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /* Nog bij te snijden foto's; de eerste staat in het venster. */
+  const [queue, setQueue] = useState<File[]>([]);
+  const [ready, setReady] = useState<ReadyUpload[]>([]);
+  const [total, setTotal] = useState(0);
 
-  const upload = async (files: FileList | null) => {
+  const startCropping = (files: FileList | null) => {
     if (!files || files.length === 0) return;
-    setBusy(true);
     setError(null);
+    setReady([]);
+    setTotal(files.length);
+    setQueue(Array.from(files));
+    if (inputRef.current) inputRef.current.value = "";
+  };
+
+  /* Volgende foto uit de wachtrij, of uploaden als alles klaar is. */
+  const advance = (finished: ReadyUpload | null) => {
+    const nextReady = finished ? [...ready, finished] : ready;
+    const nextQueue = queue.slice(1);
+    setReady(nextReady);
+    setQueue(nextQueue);
+    if (nextQueue.length === 0) {
+      setTotal(0);
+      if (nextReady.length > 0) upload(nextReady);
+    }
+  };
+
+  const upload = async (items: ReadyUpload[]) => {
+    setBusy(true);
     const supabase = createClient();
     const urls: string[] = [];
-    for (const file of Array.from(files)) {
-      const prepared = await shrinkImage(file);
-      const converted = prepared !== file;
-      let safeName = file.name
+    for (const item of items) {
+      const converted = !(item.data instanceof File);
+      let safeName = item.origName
         .toLowerCase()
         .replace(/[^a-z0-9.]+/g, "-")
         .replace(/^-+|-+$/g, "")
@@ -70,9 +100,11 @@ export default function ImageUpload({
         .slice(0, 8)}-${safeName}`;
       const { error: uploadError } = await supabase.storage
         .from("media")
-        .upload(path, prepared, {
+        .upload(path, item.data, {
           cacheControl: "31536000",
-          contentType: converted ? "image/jpeg" : file.type,
+          contentType: converted
+            ? "image/jpeg"
+            : (item.data as File).type,
         });
       if (uploadError) {
         setError(
@@ -87,9 +119,10 @@ export default function ImageUpload({
       urls.push(data.publicUrl);
     }
     setBusy(false);
-    if (inputRef.current) inputRef.current.value = "";
     onUploaded(urls);
   };
+
+  const current = queue[0];
 
   return (
     <div className="mt-2">
@@ -99,17 +132,35 @@ export default function ImageUpload({
         accept="image/*"
         multiple={multiple}
         hidden
-        onChange={(e) => upload(e.target.files)}
+        onChange={(e) => startCropping(e.target.files)}
       />
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        disabled={busy}
+        disabled={busy || queue.length > 0}
         className="rounded-full border border-sage-light px-4 py-2 text-sm font-medium text-ink/70 transition-colors hover:bg-sage-whisper disabled:opacity-60"
       >
         {busy ? "Uploaden…" : multiple ? "📷 Foto's uploaden" : "📷 Foto uploaden"}
       </button>
       {error && <p className="mt-1.5 text-xs text-bark-deep">{error}</p>}
+
+      {current && (
+        <CropDialog
+          key={`${current.name}-${queue.length}`}
+          file={current}
+          aspect={aspect}
+          label={total > 1 ? `foto ${total - queue.length + 1} van ${total}` : undefined}
+          onDone={(blob) => advance({ data: blob, origName: current.name })}
+          onSkip={async () =>
+            advance({ data: await shrinkImage(current), origName: current.name })
+          }
+          onCancel={() => {
+            setQueue([]);
+            setReady([]);
+            setTotal(0);
+          }}
+        />
+      )}
     </div>
   );
 }

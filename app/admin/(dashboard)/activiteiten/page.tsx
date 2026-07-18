@@ -1,4 +1,5 @@
 import CollectionManager from "@/components/admin/CollectionManager";
+import AlleenBeheerder from "@/components/admin/AlleenBeheerder";
 
 export default function AdminActiviteiten() {
   return (
@@ -8,6 +9,7 @@ export default function AdminActiviteiten() {
         Beheer de activiteiten en hun detailpagina&apos;s. Sleep om de volgorde
         te wijzigen.
       </p>
+      <AlleenBeheerder>
       <div className="mt-8">
         <CollectionManager
           table="activities"
@@ -76,6 +78,7 @@ export default function AdminActiviteiten() {
           ]}
         />
       </div>
+      </AlleenBeheerder>
     </div>
   );
 }

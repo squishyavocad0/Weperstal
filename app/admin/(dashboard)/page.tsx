@@ -4,6 +4,18 @@ import { displayName } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
+async function isBeheerder() {
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase.rpc("is_beheerder");
+    // Zolang rollen.sql nog niet is uitgevoerd bestaat de functie niet;
+    // dan gedraagt alles zich zoals voorheen (iedereen beheerder).
+    return error ? true : Boolean(data);
+  } catch {
+    return true;
+  }
+}
+
 async function greeting() {
   const hour = Number(
     new Intl.DateTimeFormat("nl-NL", {
@@ -57,13 +69,18 @@ export default async function AdminHome() {
       ])
     : [0, 0, 0, 0, 0];
   const welkom = configured ? await greeting() : "Goedemorgen";
+  const beheerder = configured ? await isBeheerder() : true;
 
   const cards = [
     { href: "/admin/dieren", label: "Dieren", value: animals, icon: "🐴" },
     { href: "/admin/verhalen", label: "Verhalen", value: stories, icon: "📖" },
-    { href: "/admin/activiteiten", label: "Activiteiten", value: activities, icon: "🎠" },
-    { href: "/admin/team", label: "Teamleden", value: team, icon: "👋" },
-    { href: "/admin/berichten", label: "Berichten", value: messages, icon: "✉️" },
+    ...(beheerder
+      ? [
+          { href: "/admin/activiteiten", label: "Activiteiten", value: activities, icon: "🎠" },
+          { href: "/admin/team", label: "Teamleden", value: team, icon: "👋" },
+          { href: "/admin/berichten", label: "Berichten", value: messages, icon: "✉️" },
+        ]
+      : []),
   ];
 
   return (
@@ -99,18 +116,20 @@ export default async function AdminHome() {
             <p className="text-sm text-ink/60">{c.label}</p>
           </Link>
         ))}
-        <Link
-          href="/admin/teksten"
-          className="rounded-organic bg-white p-6 shadow-soft transition-all hover:-translate-y-0.5 hover:shadow-lifted"
-        >
-          <p className="text-3xl" aria-hidden="true">✏️</p>
-          <p className="mt-3 font-display text-xl text-forest-deep">
-            Teksten aanpassen
-          </p>
-          <p className="text-sm text-ink/60">
-            Homepage- en paginateksten wijzigen
-          </p>
-        </Link>
+        {beheerder && (
+          <Link
+            href="/admin/teksten"
+            className="rounded-organic bg-white p-6 shadow-soft transition-all hover:-translate-y-0.5 hover:shadow-lifted"
+          >
+            <p className="text-3xl" aria-hidden="true">✏️</p>
+            <p className="mt-3 font-display text-xl text-forest-deep">
+              Teksten aanpassen
+            </p>
+            <p className="text-sm text-ink/60">
+              Homepage- en paginateksten wijzigen
+            </p>
+          </Link>
+        )}
       </div>
     </div>
   );

@@ -6,16 +6,19 @@ import { useState } from "react";
 import { createClient, supabaseConfigured } from "@/lib/supabase/client";
 import { HoofMark } from "@/components/site/Header";
 import UserName from "@/components/admin/UserName";
+import { useBeheerder } from "@/components/admin/useBeheerder";
 
+/* Stalhulpen zien alleen de onderdelen die ze mogen beheren. */
 const nav = [
-  { href: "/admin", label: "Overzicht", icon: "🏡" },
-  { href: "/admin/dieren", label: "Dieren", icon: "🐴" },
-  { href: "/admin/verhalen", label: "Verhalen", icon: "📖" },
-  { href: "/admin/activiteiten", label: "Activiteiten", icon: "🎠" },
-  { href: "/admin/team", label: "Team", icon: "👋" },
-  { href: "/admin/teksten", label: "Teksten", icon: "✏️" },
-  { href: "/admin/faq", label: "Vragen", icon: "💬" },
-  { href: "/admin/berichten", label: "Berichten", icon: "✉️" },
+  { href: "/admin", label: "Overzicht", icon: "🏡", beheerderOnly: false },
+  { href: "/admin/dieren", label: "Dieren", icon: "🐴", beheerderOnly: false },
+  { href: "/admin/verhalen", label: "Verhalen", icon: "📖", beheerderOnly: false },
+  { href: "/admin/activiteiten", label: "Activiteiten", icon: "🎠", beheerderOnly: true },
+  { href: "/admin/team", label: "Team", icon: "👋", beheerderOnly: true },
+  { href: "/admin/teksten", label: "Teksten", icon: "✏️", beheerderOnly: true },
+  { href: "/admin/faq", label: "Vragen", icon: "💬", beheerderOnly: true },
+  { href: "/admin/berichten", label: "Berichten", icon: "✉️", beheerderOnly: true },
+  { href: "/admin/gebruikers", label: "Gebruikers", icon: "🔑", beheerderOnly: true },
 ];
 
 export default function AdminLayout({
@@ -26,6 +29,9 @@ export default function AdminLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const beheerder = useBeheerder();
+  // Tijdens het laden tonen we alles; RLS beschermt de data hoe dan ook.
+  const items = nav.filter((i) => !i.beheerderOnly || beheerder !== false);
 
   const signOut = async () => {
     if (supabaseConfigured) {
@@ -51,7 +57,7 @@ export default function AdminLayout({
           </div>
         </div>
         <nav className="mt-2 px-3" aria-label="Beheermenu">
-          {nav.map((item) => {
+          {items.map((item) => {
             const active =
               item.href === "/admin"
                 ? pathname === "/admin"

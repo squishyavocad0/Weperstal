@@ -1,4 +1,5 @@
 import CollectionManager from "@/components/admin/CollectionManager";
+import AlleenBeheerder from "@/components/admin/AlleenBeheerder";
 
 export default function AdminFaq() {
   return (
@@ -11,6 +12,7 @@ export default function AdminFaq() {
         vragen verschijnen op de pagina &ldquo;Veelgestelde vragen&rdquo;;
         verborgen vragen blijven concept.
       </p>
+      <AlleenBeheerder>
       <div className="mt-8">
         <CollectionManager
           table="faqs"
@@ -35,6 +37,7 @@ export default function AdminFaq() {
           ]}
         />
       </div>
+      </AlleenBeheerder>
     </div>
   );
 }

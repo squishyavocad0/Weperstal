@@ -36,6 +36,7 @@ export default function AdminVerhalen() {
               label: "Omslagfoto",
               type: "image",
               required: true,
+              aspect: 16 / 9,
               help: "Upload een foto of plak een link.",
             },
             {

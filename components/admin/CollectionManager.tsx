@@ -30,6 +30,9 @@ export interface FieldConfig {
   help?: string;
   required?: boolean;
   seo?: boolean;
+  /* Verhouding van het bijsnijkader bij foto-uploads (breedte/hoogte).
+     Standaard 4:3, gelijk aan de meeste plekken op de site. */
+  aspect?: number;
 }
 
 interface Row {
@@ -470,6 +473,7 @@ function Field({
         )}
         <ImageUpload
           multiple
+          aspect={field.aspect}
           onUploaded={(added) => onChange(field.key, [...urls, ...added].join(", "))}
         />
         {field.help && <p className="mt-1.5 text-xs text-ink/50">{field.help}</p>}
@@ -521,6 +525,7 @@ function Field({
       )}
       {field.type === "image" && (
         <ImageUpload
+          aspect={field.aspect}
           onUploaded={(urls) => onChange(field.key, urls[0] ?? "")}
         />
       )}

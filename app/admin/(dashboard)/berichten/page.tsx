@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient, supabaseConfigured } from "@/lib/supabase/client";
+import AlleenBeheerder from "@/components/admin/AlleenBeheerder";
 import type { ContactMessage } from "@/lib/types";
 
 export default function AdminBerichten() {
@@ -51,6 +52,7 @@ export default function AdminBerichten() {
       <p className="mt-2 text-ink/60">
         Alle berichten die via het contactformulier binnenkomen.
       </p>
+      <AlleenBeheerder>
 
       {!supabaseConfigured ? (
         <p className="mt-6 rounded-organic bg-gold-soft/40 p-5 text-sm text-bark-deep">
@@ -116,6 +118,7 @@ export default function AdminBerichten() {
           ))}
         </ul>
       )}
+      </AlleenBeheerder>
     </div>
   );
 }
