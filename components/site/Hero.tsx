@@ -39,12 +39,12 @@ export default function Hero({
     <section className="relative flex min-h-[100svh] items-center justify-center overflow-hidden">
       <div ref={imgRef} className="absolute inset-0 scale-[1.08] will-change-transform">
         <Image
-          src="https://images.unsplash.com/photo-1508163223045-1880bc36e222?auto=format&fit=crop&w=2400&q=80"
-          alt="Kind aait een pony in een zonnige wei"
+          src="/hero-prins.jpg"
+          alt="Meisje op shetlandpony Prins in een bloemenwei bij De Weperstal"
           fill
           priority
           sizes="100vw"
-          className="object-cover"
+          className="object-cover object-[50%_22%]"
         />
       </div>
       <div className="absolute inset-0 bg-gradient-to-b from-ink/55 via-ink/25 to-forest-deep/70" />

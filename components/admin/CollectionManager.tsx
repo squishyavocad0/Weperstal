@@ -236,7 +236,7 @@ export default function CollectionManager({
               onDragStart={() => setDragId(row.id)}
               onDragOver={(e) => e.preventDefault()}
               onDrop={() => onDrop(row.id)}
-              className={`flex items-center gap-4 rounded-organic bg-white p-4 shadow-soft transition-all ${
+              className={`flex items-center gap-2.5 rounded-organic bg-white p-3 shadow-soft transition-all sm:gap-4 sm:p-4 ${
                 orderable ? "cursor-grab active:cursor-grabbing" : ""
               } ${dragId === row.id ? "opacity-50" : ""}`}
             >
@@ -250,7 +250,7 @@ export default function CollectionManager({
                 </span>
               )}
               {imageField && typeof row[imageField] === "string" && row[imageField] ? (
-                <span className="block h-14 w-14 shrink-0 overflow-hidden rounded-2xl">
+                <span className="block h-11 w-11 shrink-0 overflow-hidden rounded-2xl sm:h-14 sm:w-14">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={String(row[imageField])}
@@ -269,8 +269,9 @@ export default function CollectionManager({
                   </p>
                 )}
               </div>
+              {/* Status: label op brede schermen, gekleurd stipje op mobiel */}
               <span
-                className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${
+                className={`hidden shrink-0 rounded-full px-3 py-1 text-xs font-semibold sm:inline ${
                   row.published
                     ? "bg-sage-whisper text-forest-deep"
                     : "bg-gold-soft/50 text-bark-deep"
@@ -278,7 +279,16 @@ export default function CollectionManager({
               >
                 {row.published ? "Gepubliceerd" : "Concept"}
               </span>
-              <div className="flex shrink-0 gap-2">
+              <span
+                role="img"
+                aria-label={row.published ? "Gepubliceerd" : "Concept"}
+                title={row.published ? "Gepubliceerd" : "Concept"}
+                className={`h-2.5 w-2.5 shrink-0 rounded-full sm:hidden ${
+                  row.published ? "bg-forest" : "bg-gold"
+                }`}
+              />
+              {/* Acties: tekst op brede schermen, icoontjes op mobiel */}
+              <div className="flex shrink-0 gap-1.5 sm:gap-2">
                 {previewBase && (
                   <a
                     href={`${previewBase}/${encodeURIComponent(
@@ -286,28 +296,50 @@ export default function CollectionManager({
                     )}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="rounded-full border border-sage-light px-3.5 py-1.5 text-xs font-medium text-ink/70 transition-colors hover:bg-sage-whisper"
+                    aria-label="Bekijken"
+                    title="Bekijken"
+                    className="rounded-full border border-sage-light p-2 text-xs font-medium text-ink/70 transition-colors hover:bg-sage-whisper sm:px-3.5 sm:py-1.5"
                   >
-                    Bekijken
+                    <span className="hidden sm:inline">Bekijken</span>
+                    <span className="sm:hidden" aria-hidden="true">
+                      <IconBekijken />
+                    </span>
                   </a>
                 )}
                 <button
                   onClick={() => togglePublished(row)}
-                  className="rounded-full border border-sage-light px-3.5 py-1.5 text-xs font-medium text-ink/70 transition-colors hover:bg-sage-whisper"
+                  aria-label={row.published ? "Verbergen" : "Publiceren"}
+                  title={row.published ? "Verbergen" : "Publiceren"}
+                  className="rounded-full border border-sage-light p-2 text-xs font-medium text-ink/70 transition-colors hover:bg-sage-whisper sm:px-3.5 sm:py-1.5"
                 >
-                  {row.published ? "Verbergen" : "Publiceren"}
+                  <span className="hidden sm:inline">
+                    {row.published ? "Verbergen" : "Publiceren"}
+                  </span>
+                  <span className="sm:hidden" aria-hidden="true">
+                    {row.published ? <IconOogDicht /> : <IconOog />}
+                  </span>
                 </button>
                 <button
                   onClick={() => setEditing(row)}
-                  className="rounded-full border border-sage-light px-3.5 py-1.5 text-xs font-medium text-ink/70 transition-colors hover:bg-sage-whisper"
+                  aria-label="Bewerken"
+                  title="Bewerken"
+                  className="rounded-full border border-sage-light p-2 text-xs font-medium text-ink/70 transition-colors hover:bg-sage-whisper sm:px-3.5 sm:py-1.5"
                 >
-                  Bewerken
+                  <span className="hidden sm:inline">Bewerken</span>
+                  <span className="sm:hidden" aria-hidden="true">
+                    <IconPotlood />
+                  </span>
                 </button>
                 <button
                   onClick={() => remove(row)}
-                  className="rounded-full border border-transparent px-3.5 py-1.5 text-xs font-medium text-bark-deep transition-colors hover:bg-gold-soft/40"
+                  aria-label="Verwijderen"
+                  title="Verwijderen"
+                  className="rounded-full border border-transparent p-2 text-xs font-medium text-bark-deep transition-colors hover:bg-gold-soft/40 sm:px-3.5 sm:py-1.5"
                 >
-                  Verwijderen
+                  <span className="hidden sm:inline">Verwijderen</span>
+                  <span className="sm:hidden" aria-hidden="true">
+                    <IconPrullenbak />
+                  </span>
                 </button>
               </div>
             </li>
@@ -537,5 +569,66 @@ function Field({
         </span>
       )}
     </div>
+  );
+}
+
+/* ── Icoontjes voor de actieknoppen op smalle schermen ── */
+const iconProps = {
+  width: 15,
+  height: 15,
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 2,
+  strokeLinecap: "round",
+  strokeLinejoin: "round",
+} as const;
+
+function IconOog() {
+  return (
+    <svg {...iconProps}>
+      <path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
+function IconOogDicht() {
+  return (
+    <svg {...iconProps}>
+      <path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z" />
+      <circle cx="12" cy="12" r="3" />
+      <path d="M4 4l16 16" />
+    </svg>
+  );
+}
+
+function IconPotlood() {
+  return (
+    <svg {...iconProps}>
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+    </svg>
+  );
+}
+
+function IconPrullenbak() {
+  return (
+    <svg {...iconProps}>
+      <path d="M3 6h18" />
+      <path d="M8 6V4h8v2" />
+      <path d="M19 6l-1 14H6L5 6" />
+      <path d="M10 11v6M14 11v6" />
+    </svg>
+  );
+}
+
+function IconBekijken() {
+  return (
+    <svg {...iconProps}>
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+      <path d="M15 3h6v6" />
+      <path d="M10 14L21 3" />
+    </svg>
   );
 }
