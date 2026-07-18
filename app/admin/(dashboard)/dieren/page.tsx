@@ -47,7 +47,31 @@ export default function AdminDieren() {
               required: true,
               help: "Upload een foto of plak een link.",
             },
-            { key: "bio", label: "Korte bio", type: "textarea", required: true },
+            {
+              key: "bio",
+              label: "Korte bio (op het kaartje)",
+              type: "textarea",
+              required: true,
+              help: "Eén à twee zinnen; dit staat op het overzicht.",
+            },
+            {
+              key: "slug",
+              label: "Link van de eigen pagina",
+              type: "text",
+              help: "Kleine letters en streepjes, bijv.: marwyn. Leeg laten = geen eigen pagina.",
+            },
+            {
+              key: "story",
+              label: "Het hele verhaal",
+              type: "longtext",
+              help: "Het volledige verhaal voor op de eigen pagina. Laat een witregel tussen alinea's.",
+            },
+            {
+              key: "gallery",
+              label: "Extra foto's",
+              type: "images",
+              help: "Voor op de eigen pagina. Mag leeg blijven.",
+            },
           ]}
         />
       </div>

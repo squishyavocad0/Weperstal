@@ -40,6 +40,12 @@ export async function getAnimals(): Promise<Animal[]> {
   return fromTable<Animal>("animals", seedAnimals);
 }
 
+export async function getAnimal(slug: string): Promise<Animal | null> {
+  if (!slug) return null;
+  const all = await getAnimals();
+  return all.find((a) => a.slug === slug) ?? null;
+}
+
 export async function getActivities(): Promise<Activity[]> {
   return fromTable<Activity>("activities", seedActivities);
 }

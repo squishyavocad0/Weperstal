@@ -13,6 +13,11 @@ export interface Animal {
   species: AnimalSpecies;
   age: number;
   bio: string;
+  /* Eigen pagina: /dieren/[slug]. Leeg = geen eigen pagina. */
+  slug: string;
+  /* Het volledige verhaal op de eigen pagina (bio blijft de kaarttekst). */
+  story: string;
+  gallery: string[];
   traits: string[];
   image_url: string;
   published: boolean;

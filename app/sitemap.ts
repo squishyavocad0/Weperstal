@@ -1,11 +1,12 @@
 import type { MetadataRoute } from "next";
-import { getActivities, getStories } from "@/lib/data";
+import { getActivities, getAnimals, getStories } from "@/lib/data";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = "https://weperstal.nl";
-  const [activities, stories] = await Promise.all([
+  const [activities, stories, animals] = await Promise.all([
     getActivities(),
     getStories(),
+    getAnimals(),
   ]);
 
   return [
@@ -27,5 +28,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "yearly" as const,
       priority: 0.6,
     })),
+    ...animals
+      .filter((a) => a.slug)
+      .map((a) => ({
+        url: `${base}/dieren/${a.slug}`,
+        changeFrequency: "monthly" as const,
+        priority: 0.6,
+      })),
   ];
 }
