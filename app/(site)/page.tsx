@@ -115,7 +115,7 @@ export default async function HomePage() {
             {featuredAnimals.map((animal, i) => (
               <Reveal key={animal.id} delay={i * 100}>
                 <Link
-                  href="/dieren"
+                  href={animal.slug ? `/dieren/${animal.slug}` : "/dieren"}
                   className="group block overflow-hidden rounded-organic bg-white shadow-soft transition-all duration-500 hover:-translate-y-1.5 hover:shadow-lifted"
                 >
                   <div className="relative aspect-square overflow-hidden">
