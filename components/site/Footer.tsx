@@ -1,11 +1,15 @@
+"use client";
+
 import Link from "next/link";
 import { HoofMark } from "./Header";
 import { MeadowDivider } from "./Nature";
+import { useMeadowColor } from "./FooterMeadow";
 
 export default function Footer() {
+  const from = useMeadowColor();
   return (
     <footer className="mt-auto">
-      <MeadowDivider from="#F9F5EC" to="#3E5439" />
+      <MeadowDivider from={from} to="#3E5439" />
       <div className="bg-forest-deep text-cream">
         <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 md:grid-cols-3 md:px-8">
           <div>

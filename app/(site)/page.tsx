@@ -3,6 +3,8 @@ import Link from "next/link";
 import Hero from "@/components/site/Hero";
 import StorySlider from "@/components/site/StorySlider";
 import { MeadowDivider, Reveal } from "@/components/site/Nature";
+import { MeadowColor } from "@/components/site/FooterMeadow";
+import { MEADOW_COLORS } from "@/components/site/meadowColors";
 import { ActivityCard, SectionHeading } from "@/components/site/ui";
 import { getActivities, getAnimals, getContent, getStories } from "@/lib/data";
 import { speciesLabel } from "@/lib/utils";
@@ -206,6 +208,8 @@ export default async function HomePage() {
           </Reveal>
         </div>
       </section>
+
+      <MeadowColor color={MEADOW_COLORS.forest} />
     </>
   );
 }

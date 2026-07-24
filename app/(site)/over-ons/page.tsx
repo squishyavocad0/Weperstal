@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { MeadowDivider, Reveal } from "@/components/site/Nature";
+import { MeadowColor } from "@/components/site/FooterMeadow";
+import { MEADOW_COLORS } from "@/components/site/meadowColors";
 import { SectionHeading, TeamCard } from "@/components/site/ui";
 import { getContent, getTeam } from "@/lib/data";
 
@@ -150,6 +152,8 @@ export default async function OverOnsPage() {
           </Reveal>
         </div>
       </section>
+
+      <MeadowColor color={MEADOW_COLORS.sageWhisper} />
     </>
   );
 }

@@ -3,6 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MeadowDivider, Reveal } from "@/components/site/Nature";
+import { MeadowColor } from "@/components/site/FooterMeadow";
+import { MEADOW_COLORS } from "@/components/site/meadowColors";
 import { ActivityIcon } from "@/components/site/ui";
 import { getActivities, getActivity } from "@/lib/data";
 
@@ -149,6 +151,8 @@ export default async function ActivityDetailPage({
           Vraag het Maria
         </Link>
       </section>
+
+      <MeadowColor color={MEADOW_COLORS.sageWhisper} />
     </>
   );
 }

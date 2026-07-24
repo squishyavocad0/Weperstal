@@ -4,6 +4,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import LikeButton from "@/components/site/LikeButton";
 import { Reveal } from "@/components/site/Nature";
+import { MeadowColor } from "@/components/site/FooterMeadow";
+import { MEADOW_COLORS } from "@/components/site/meadowColors";
 import { StoryCard } from "@/components/site/ui";
 import { getStories, getStory } from "@/lib/data";
 import { formatDate } from "@/lib/utils";
@@ -125,6 +127,8 @@ export default async function StoryDetailPage({
           </div>
         </section>
       )}
+
+      {others.length > 0 && <MeadowColor color={MEADOW_COLORS.sageWhisper} />}
     </>
   );
 }
