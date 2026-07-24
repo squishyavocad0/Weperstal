@@ -43,7 +43,8 @@ export async function getAnimals(): Promise<Animal[]> {
 export async function getAnimal(slug: string): Promise<Animal | null> {
   if (!slug) return null;
   const all = await getAnimals();
-  return all.find((a) => a.slug === slug) ?? null;
+  const target = slug.toLowerCase();
+  return all.find((a) => a.slug.toLowerCase() === target) ?? null;
 }
 
 export async function getActivities(): Promise<Activity[]> {
